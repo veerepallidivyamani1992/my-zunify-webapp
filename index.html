@@ -1,2059 +1,1152 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZUNIFY — Learn • Explore • Unify</title>
-  <style>
-    :root {
-      --bg: #f8f5ff;
-      --bg-soft: #f1ebff;
-      --card: #ffffff;
-      --card-border: #e5dafc;
-      --text: #221738;
-      --text-muted: #675885;
-      --primary: #6d28d9;
-      --primary-light: #8b5cf6;
-      --primary-pale: #ede9fe;
-      --gold: #f59e0b;
-      --gold-soft: #fef3c7;
-      --success: #10b981;
-      --success-soft: #d1fae5;
-      --shadow: 0 10px 30px rgba(109, 40, 217, 0.08);
-      --radius: 18px;
-      --transition: all 0.25s ease;
-    }
-
-    body.dark {
-      --bg: #130d21;
-      --bg-soft: #1b132e;
-      --card: #221838;
-      --card-border: #362757;
-      --text: #f5f3ff;
-      --text-muted: #b8abcf;
-      --primary: #8b5cf6;
-      --primary-light: #a78bfa;
-      --primary-pale: #2f2052;
-      --gold: #fbbf24;
-      --gold-soft: #3d2e10;
-      --success: #34d399;
-      --success-soft: #11382b;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      transition: var(--transition);
-      overflow-x: hidden;
-    }
-
-    /* Welcome Overlay */
-    #welcomeScreen {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #8b5cf6 100%);
-      color: white;
-      z-index: 2000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
-
-    #welcomeScreen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .welcome-box {
-      max-width: 560px;
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 28px;
-      padding: 36px 28px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-    }
-
-    .welcome-badge {
-      display: inline-block;
-      background: rgba(245, 158, 11, 0.22);
-      border: 1px solid #fbbf24;
-      color: #fef3c7;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      margin-bottom: 14px;
-    }
-
-    .welcome-box h1 {
-      font-size: 2.6rem;
-      letter-spacing: 1.5px;
-      margin-bottom: 6px;
-    }
-
-    .welcome-tagline {
-      font-size: 1.1rem;
-      color: #ede9fe;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .welcome-slogan {
-      font-size: 0.95rem;
-      color: #ddd6fe;
-      margin-bottom: 24px;
-    }
-
-    .welcome-input-group {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .welcome-input-group input,
-    .welcome-input-group select {
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: none;
-      font-size: 0.95rem;
-      outline: none;
-      color: #221738;
-    }
-
-    .btn-gold {
-      background: linear-gradient(135deg, #f59e0b, #fbbf24);
-      color: #221738;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 14px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
-      transition: transform 0.2s ease;
-    }
-
-    .btn-gold:hover {
-      transform: translateY(-2px);
-    }
-
-    /* Sidebar Navigation */
-    aside {
-      width: 265px;
-      background: var(--card);
-      border-right: 1px solid var(--card-border);
-      padding: 22px 16px;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 100;
-      transition: transform 0.3s ease;
-    }
-
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0 8px 20px;
-      border-bottom: 1px solid var(--card-border);
-      margin-bottom: 18px;
-    }
-
-    .logo-title {
-      font-size: 1.45rem;
-      font-weight: 800;
-      color: var(--primary);
-      letter-spacing: 0.8px;
-    }
-
-    .logo-sub {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .nav-links {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 0.94rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: left;
-      transition: var(--transition);
-    }
-
-    .nav-item:hover {
-      background: var(--primary-pale);
-      color: var(--primary);
-    }
-
-    .nav-item.active {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      box-shadow: 0 6px 16px rgba(109, 40, 217, 0.25);
-    }
-
-    .sidebar-bottom {
-      padding-top: 14px;
-      border-top: 1px solid var(--card-border);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .theme-btn {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-      background: var(--bg-soft);
-      color: var(--text);
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    /* Main Content Layout */
-    main {
-      margin-left: 265px;
-      flex: 1;
-      padding: 24px 32px 100px;
-      max-width: 1280px;
-    }
-
-    /* Top Bar */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 26px;
-      flex-wrap: wrap;
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .mobile-menu-btn {
-      display: none;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      cursor: pointer;
-    }
-
-    .search-box {
-      position: relative;
-      flex: 1;
-      max-width: 420px;
-      min-width: 240px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 12px 16px 12px 42px;
-      border-radius: 14px;
-      border: 1px solid var(--card-border);
-      background: var(--card);
-      color: var(--text);
-      font-size: 0.92rem;
-      outline: none;
-      box-shadow: var(--shadow);
-    }
-
-    .search-box input:focus {
-      border-color: var(--primary);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-    }
-
-    .search-results-dropdown {
-      position: absolute;
-      top: 50px;
-      left: 0;
-      right: 0;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      z-index: 500;
-      max-height: 300px;
-      overflow-y: auto;
-      display: none;
-    }
-
-    .search-result-item {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--card-border);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .search-result-item:hover {
-      background: var(--primary-pale);
-    }
-
-    .student-pill {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      box-shadow: var(--shadow);
-    }
-
-    .gold-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--gold);
-    }
-
-    /* Section Containers */
-    .page-section {
-      display: none;
-      animation: fadeUp 0.3s ease;
-    }
-
-    .page-section.active {
-      display: block;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Cards & Grids */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      padding: 22px;
-      box-shadow: var(--shadow);
-      transition: var(--transition);
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-      gap: 20px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .hero-banner {
-      background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 65%, #9333ea 100%);
-      color: white;
-      border-radius: 24px;
-      padding: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-banner::after {
-      content: "";
-      position: absolute;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: rgba(251, 191, 36, 0.14);
-      right: -40px;
-      top: -60px;
-    }
-
-    .hero-text h2 {
-      font-size: 1.7rem;
-      margin-bottom: 8px;
-    }
-
-    .hero-text p {
-      color: #ede9fe;
-      font-size: 0.98rem;
-      max-width: 560px;
-      line-height: 1.5;
-      margin-bottom: 16px;
-    }
-
-    .calm-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.16);
-      border: 1px solid rgba(251, 191, 36, 0.5);
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      color: #fef3c7;
-    }
-
-    /* Buttons & Badges */
-    .btn {
-      padding: 10px 18px;
-      border-radius: 12px;
-      border: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-light);
-      transform: translateY(-1px);
-    }
-
-    .btn-soft {
-      background: var(--primary-pale);
-      color: var(--primary);
-    }
-
-    .btn-soft:hover {
-      filter: brightness(0.96);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      background: var(--primary-pale);
-      color: var(--primary);
-    }
-
-    .badge-gold {
-      background: var(--gold-soft);
-      color: #b45309;
-    }
-
-    body.dark .badge-gold {
-      color: #fbbf24;
-    }
-
-    .badge-success {
-      background: var(--success-soft);
-      color: #065f46;
-    }
-
-    body.dark .badge-success {
-      color: #34d399;
-    }
-
-    /* Tabs */
-    .pill-tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .pill-tab {
-      padding: 9px 16px;
-      border-radius: 999px;
-      border: 1px solid var(--card-border);
-      background: var(--card);
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .pill-tab.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    /* Lesson Viewer */
-    .lesson-box {
-      background: var(--bg-soft);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-top: 16px;
-    }
-
-    .diagram-stage {
-      background: var(--card);
-      border: 1px dashed var(--primary-light);
-      border-radius: 14px;
-      padding: 16px;
-      margin: 16px 0;
-      text-align: center;
-    }
-
-    .zuno-tip-box {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: linear-gradient(135deg, var(--primary-pale), var(--gold-soft));
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 14px 18px;
-      margin-top: 16px;
-    }
-
-    .quiz-option {
-      display: block;
-      width: 100%;
-      text-align: left;
-      padding: 12px 16px;
-      margin-top: 8px;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-      background: var(--card);
-      color: var(--text);
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .quiz-option:hover {
-      border-color: var(--primary);
-    }
-
-    .quiz-option.correct {
-      background: var(--success-soft);
-      border-color: var(--success);
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .quiz-option.wrong {
-      background: #fee2e2;
-      border-color: #ef4444;
-      color: #7f1d1d;
-    }
-
-    /* Progress Bar */
-    .progress-bar {
-      width: 100%;
-      height: 10px;
-      background: var(--bg-soft);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary), var(--gold));
-      border-radius: 999px;
-      transition: width 0.4s ease;
-    }
-
-    /* Certificate Modal */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(19, 13, 33, 0.72);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 1500;
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .certificate-card {
-      background: #fffdf7;
-      color: #221738;
-      max-width: 620px;
-      width: 100%;
-      border-radius: 24px;
-      padding: 32px;
-      border: 6px double #f59e0b;
-      text-align: center;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
-      position: relative;
-    }
-
-    /* Floating Zuno Companion */
-    #zunoFloatingBtn {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      border: 3px solid var(--gold);
-      box-shadow: 0 12px 28px rgba(109, 40, 217, 0.35);
-      cursor: pointer;
-      z-index: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.25s ease;
-    }
-
-    #zunoFloatingBtn:hover {
-      transform: scale(1.08) rotate(-3deg);
-    }
-
-    #zunoChatWindow {
-      position: fixed;
-      bottom: 108px;
-      right: 24px;
-      width: 350px;
-      max-width: calc(100vw - 32px);
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 22px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
-      z-index: 950;
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    #zunoChatWindow.open {
-      display: flex;
-    }
-
-    .chat-header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      padding: 14px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .chat-messages {
-      padding: 16px;
-      height: 270px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: var(--bg-soft);
-    }
-
-    .msg {
-      padding: 10px 14px;
-      border-radius: 14px;
-      font-size: 0.88rem;
-      line-height: 1.45;
-      max-width: 85%;
-    }
-
-    .msg-zuno {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      align-self: flex-start;
-    }
-
-    .msg-user {
-      background: var(--primary);
-      color: white;
-      align-self: flex-end;
-    }
-
-    .chat-input-row {
-      display: flex;
-      padding: 10px;
-      gap: 8px;
-      background: var(--card);
-      border-top: 1px solid var(--card-border);
-    }
-
-    .chat-input-row input {
-      flex: 1;
-      padding: 9px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-      background: var(--bg-soft);
-      color: var(--text);
-      outline: none;
-    }
-
-    /* Mind Map & Flashcard Helpers */
-    .flashcard {
-      background: linear-gradient(135deg, var(--primary-pale), var(--card));
-      border: 2px solid var(--primary-light);
-      border-radius: 18px;
-      padding: 28px;
-      text-align: center;
-      cursor: pointer;
-      min-height: 160px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: 12px 0;
-    }
-
-    textarea.notes-pad {
-      width: 100%;
-      min-height: 240px;
-      padding: 16px;
-      border-radius: 14px;
-      border: 1px solid var(--card-border);
-      background: var(--bg-soft);
-      color: var(--text);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      outline: none;
-      resize: vertical;
-    }
-
-    @media (max-width: 860px) {
-      aside {
-        transform: translateX(-100%);
-      }
-      aside.open {
-        transform: translateX(0);
-      }
-      main {
-        margin-left: 0;
-        padding: 18px 16px 100px;
-      }
-      .mobile-menu-btn {
-        display: inline-block;
-      }
-      .hero-banner {
-        flex-direction: column;
-        text-align: center;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6d28d9">
+<title>ZUNIFY | Learn • Explore • Unify</title>
+
+<style>
+:root {
+  --primary:#6d28d9;
+  --secondary:#a78bfa;
+  --accent:#facc15;
+  --bg:#f7f5ff;
+  --surface:#ffffff;
+  --text:#241b35;
+  --muted:#817991;
+  --border:#eee8f8;
+  --soft:#f0eaff;
+  --shadow:0 8px 28px rgba(65,35,110,.07);
+}
+body.dark {
+  --bg:#171323;
+  --surface:#241d32;
+  --text:#f7f2ff;
+  --muted:#b4a9c5;
+  --border:#3b304e;
+  --soft:#35264c;
+  --shadow:0 8px 28px rgba(0,0,0,.2);
+}
+* {box-sizing:border-box;margin:0;padding:0}
+body {
+  font-family:Inter,system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:.25s;
+}
+button,input,textarea,select {font:inherit}
+button {cursor:pointer}
+.app {min-height:100vh}
+header {
+  height:72px;
+  padding:0 5%;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.logo {display:flex;align-items:center;gap:10px}
+.logo-icon {
+  background:var(--primary);
+  color:white;
+  width:40px;height:40px;
+  border-radius:13px;
+  display:grid;place-items:center;
+  font-size:22px;font-weight:900;
+}
+.logo h2 {font-size:21px;letter-spacing:1px}
+.logo span {color:var(--primary)}
+.header-actions {display:flex;gap:10px;align-items:center}
+.icon-btn {
+  width:40px;height:40px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--bg);
+  color:var(--text);
+}
+.layout {
+  display:grid;
+  grid-template-columns:230px 1fr;
+  min-height:calc(100vh - 72px);
+}
+.sidebar {
+  padding:25px 16px;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+}
+.nav-label {
+  font-size:11px;
+  color:var(--muted);
+  font-weight:700;
+  letter-spacing:1.5px;
+  margin:20px 12px 10px;
+}
+.nav-btn {
+  width:100%;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  padding:13px 14px;
+  border-radius:12px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  text-align:left;
+  margin:4px 0;
+  font-weight:600;
+}
+.nav-btn:hover,.nav-btn.active {
+  background:var(--soft);
+  color:var(--primary);
+}
+.nav-btn span:first-child {font-size:19px}
+.sidebar-bottom {
+  margin-top:45px;
+  padding:15px;
+  background:var(--soft);
+  border-radius:15px;
+  font-size:12px;
+  line-height:1.7;
+}
+main {padding:30px 4%;max-width:1450px;width:100%;margin:auto}
+.page {display:none;animation:fade .25s}
+.page.active {display:block}
+@keyframes fade {
+  from {opacity:0;transform:translateY(5px)}
+  to {opacity:1;transform:translateY(0)}
+}
+h1 {font-size:clamp(25px,4vw,34px);margin-bottom:8px}
+h2 {font-size:21px}
+p {line-height:1.6}
+.muted {color:var(--muted)}
+.small {font-size:13px}
+.hero {
+  background:linear-gradient(120deg,#6d28d9,#9b70ec);
+  color:white;
+  padding:35px;
+  border-radius:24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.hero h1 {font-size:clamp(26px,4vw,38px)}
+.hero p {color:#eee5ff;margin:12px 0 20px}
+.zuno {
+  width:115px;height:115px;
+  border-radius:43% 48% 45% 47%;
+  background:#fff0c2;
+  display:grid;place-items:center;
+  font-size:70px;
+  flex-shrink:0;
+  box-shadow:0 8px 25px #35108044;
+  transform:rotate(-5deg);
+}
+.btn {
+  border:0;
+  border-radius:11px;
+  padding:12px 19px;
+  background:var(--primary);
+  color:white;
+  font-weight:650;
+}
+.btn:hover {filter:brightness(1.1);transform:translateY(-1px)}
+.btn-light {background:white;color:#6d28d9}
+.btn-outline {
+  border:1px solid var(--border);
+  color:var(--text);
+  background:var(--surface);
+}
+.section-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:30px 0 16px;
+  gap:10px;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:17px;
+}
+.card {
+  background:var(--surface);
+  padding:21px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.card-icon {
+  width:45px;height:45px;
+  border-radius:13px;
+  display:grid;place-items:center;
+  font-size:23px;
+  background:var(--soft);
+  margin-bottom:14px;
+}
+.card h3 {margin-bottom:7px}
+.card p {font-size:13px;color:var(--muted)}
+.card button {margin-top:15px}
+.progress-track {
+  height:8px;
+  border-radius:20px;
+  background:var(--border);
+  overflow:hidden;
+  margin-top:12px;
+}
+.progress-fill {
+  height:100%;
+  background:var(--primary);
+  border-radius:20px;
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+  margin-top:20px;
+}
+.stat {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:17px;
+  border-radius:15px;
+}
+.stat strong {font-size:26px;color:var(--primary)}
+.stat p {font-size:12px;color:var(--muted)}
+.toolbar {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:20px 0;
+}
+input,textarea,select {
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:11px;
+  padding:12px;
+  width:100%;
+  outline:none;
+}
+input:focus,textarea:focus,select:focus {
+  border-color:var(--secondary);
+}
+.toolbar select {max-width:200px}
+.toolbar input {max-width:320px}
+.lesson-card {display:flex;flex-direction:column}
+.lesson-card .btn {align-self:flex-start}
+.tag {
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:20px;
+  background:var(--soft);
+  color:var(--primary);
+  font-size:11px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+.note-form {display:grid;gap:12px;margin-bottom:25px}
+textarea {min-height:120px;resize:vertical}
+.note-item {
+  border:1px solid var(--border);
+  padding:17px;
+  border-radius:14px;
+  background:var(--surface);
+  margin-bottom:12px;
+}
+.note-item h3 {margin-bottom:7px}
+.note-actions {display:flex;gap:8px;margin-top:12px}
+.note-actions button {
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
+  padding:7px 11px;
+  border-radius:8px;
+  font-size:12px;
+}
+.ai-layout {
+  display:grid;
+  grid-template-columns:1fr 280px;
+  gap:20px;
+}
+.ai-box {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:22px;
+  min-height:440px;
+}
+.ai-heading {display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.ai-heading .zuno {width:65px;height:65px;font-size:40px}
+.chat-area {
+  height:260px;
+  overflow-y:auto;
+  padding:5px;
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+}
+.message {
+  padding:12px 15px;
+  border-radius:14px;
+  max-width:90%;
+  white-space:pre-wrap;
+  line-height:1.6;
+  font-size:14px;
+}
+.bot {background:var(--soft);align-self:flex-start}
+.user {background:var(--primary);color:white;align-self:flex-end}
+.chat-input {display:flex;gap:8px;margin-top:15px}
+.chat-input input {min-width:0}
+.quick-actions {display:grid;gap:10px}
+.quick-actions button {
+  padding:13px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  border-radius:12px;
+  text-align:left;
+}
+.quick-actions button:hover {border-color:var(--primary)}
+.lesson-detail {
+  background:var(--surface);
+  padding:25px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  line-height:1.9;
+}
+.lesson-detail h2 {margin:20px 0 8px}
+.lesson-detail ul {padding-left:22px}
+.empty {
+  text-align:center;
+  padding:35px 10px;
+  color:var(--muted);
+}
+.toast {
+  position:fixed;
+  bottom:25px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#281b3c;
+  color:white;
+  padding:12px 20px;
+  border-radius:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+  z-index:30;
+}
+.toast.show {opacity:1}
+footer {
+  text-align:center;
+  color:var(--muted);
+  padding:35px 10px;
+  font-size:12px;
+}
+.mobile-nav {display:none}
+@media(max-width:850px) {
+  .layout {grid-template-columns:1fr}
+  .sidebar {display:none}
+  main {padding:22px 16px 90px}
+  .grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ai-layout {grid-template-columns:1fr}
+  .mobile-nav {
+    position:fixed;
+    display:flex;
+    bottom:0;left:0;right:0;
+    background:var(--surface);
+    border-top:1px solid var(--border);
+    justify-content:space-around;
+    padding:9px 3px;
+    z-index:20;
+  }
+  .mobile-nav button {
+    border:0;background:transparent;
+    color:var(--muted);
+    font-size:11px;
+    display:grid;gap:3px;
+    justify-items:center;
+  }
+  .mobile-nav button span {font-size:20px}
+  .mobile-nav button.active {color:var(--primary)}
+}
+@media(max-width:520px) {
+  header {padding:0 15px}
+  .logo h2 {font-size:18px}
+  .hero {padding:24px 19px}
+  .zuno {width:75px;height:75px;font-size:48px}
+  .grid {grid-template-columns:1fr}
+  .stats {gap:8px}
+  .stat {padding:12px}
+  .stat strong {font-size:21px}
+  .hero p {font-size:13px}
+}
+</style>
 </head>
+
 <body>
+<div class="app">
 
-  <!-- Hidden SVG Sprite Definitions for Zuno Mascot (Original Fluffy Purple-Lavender Creature with Gold Star Crest) -->
-  <svg width="0" height="0" style="position:absolute">
-    <defs>
-      <symbol id="zuno-mascot" viewBox="0 0 140 140">
-        <!-- Fluffy Tail -->
-        <circle cx="106" cy="96" r="18" fill="#c4b5fd" />
-        <circle cx="114" cy="88" r="10" fill="#ede9fe" />
-        <!-- Fluffy Ears -->
-        <ellipse cx="44" cy="34" rx="13" ry="22" transform="rotate(-18 44 34)" fill="#7c3aed" />
-        <ellipse cx="44" cy="35" rx="7" ry="14" transform="rotate(-18 44 35)" fill="#ddd6fe" />
-        <ellipse cx="96" cy="34" rx="13" ry="22" transform="rotate(18 96 34)" fill="#7c3aed" />
-        <ellipse cx="96" cy="35" rx="7" ry="14" transform="rotate(18 96 35)" fill="#ddd6fe" />
-        <!-- Round Fluffy Body -->
-        <circle cx="70" cy="76" r="46" fill="#8b5cf6" />
-        <!-- Cloud Ruff / Chest Fluff -->
-        <circle cx="52" cy="96" r="14" fill="#f5f3ff" />
-        <circle cx="70" cy="100" r="16" fill="#f5f3ff" />
-        <circle cx="88" cy="96" r="14" fill="#f5f3ff" />
-        <!-- Face Cream Patch -->
-        <ellipse cx="70" cy="72" rx="34" ry="28" fill="#ede9fe" />
-        <!-- Gold Curiosity Star on Forehead -->
-        <polygon points="70,45 73,52 80,52 74,56 76,63 70,59 64,63 66,56 60,52 67,52" fill="#f59e0b" />
-        <!-- Big Curious Eyes -->
-        <circle cx="56" cy="70" r="7.5" fill="#221738" />
-        <circle cx="58.5" cy="67.5" r="2.8" fill="#ffffff" />
-        <circle cx="84" cy="70" r="7.5" fill="#221738" />
-        <circle cx="86.5" cy="67.5" r="2.8" fill="#ffffff" />
-        <!-- Rosy Lavender Cheeks -->
-        <ellipse cx="46" cy="79" rx="5.5" ry="3.5" fill="#f472b6" opacity="0.55" />
-        <ellipse cx="94" cy="79" rx="5.5" ry="3.5" fill="#f472b6" opacity="0.55" />
-        <!-- Cheerful Smile & Tiny Nose -->
-        <polygon points="67,76 73,76 70,80" fill="#6d28d9" />
-        <path d="M62 83 Q70 90 78 83" stroke="#221738" stroke-width="2.6" fill="none" stroke-linecap="round" />
-        <!-- Little Paws -->
-        <ellipse cx="46" cy="115" rx="11" ry="7" fill="#7c3aed" />
-        <ellipse cx="94" cy="115" rx="11" ry="7" fill="#7c3aed" />
-      </symbol>
-    </defs>
-  </svg>
+<header>
+  <div class="logo">
+    <div class="logo-icon">Z</div>
+    <h2>ZUN<span>IFY</span></h2>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <button class="icon-btn" onclick="navigate('home')" title="Home">⌂</button>
+  </div>
+</header>
 
-  <!-- WELCOME SCREEN -->
-  <div id="welcomeScreen">
-    <div class="welcome-box">
-      <div class="welcome-badge">✨ NCERT Classes 6–10 • Skills • Future</div>
-      <div style="margin: 0 auto 10px; width: 118px; height: 118px;">
-        <svg width="118" height="118"><use href="#zuno-mascot"/></svg>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="nav-label">MAIN MENU</div>
+  <button class="nav-btn active" data-page="home" onclick="navigate('home')"><span>⌂</span> Home</button>
+  <button class="nav-btn" data-page="learn" onclick="navigate('learn')"><span>📚</span> Learn</button>
+  <button class="nav-btn" data-page="zuno" onclick="navigate('zuno')"><span>✨</span> Zuno AI</button>
+  <button class="nav-btn" data-page="notes" onclick="navigate('notes')"><span>📝</span> My Notes</button>
+  <button class="nav-btn" data-page="progress" onclick="navigate('progress')"><span>📊</span> My Progress</button>
+
+  <div class="sidebar-bottom">
+    <div style="font-size:28px">🐻</div>
+    <strong>Meet Zuno!</strong>
+    <p>Your friendly learning companion. Let's discover something new!</p>
+  </div>
+</aside>
+
+<main>
+
+<!-- HOME -->
+<section class="page active" id="home">
+  <div class="hero">
+    <div>
+      <span class="tag" style="background:#ffffff25;color:white">WELCOME TO ZUNIFY</span>
+      <h1>Learning made<br>more exciting! 💜</h1>
+      <p>One Platform. Endless Possibilities.</p>
+      <button class="btn btn-light" onclick="navigate('learn')">Start Learning →</button>
+    </div>
+    <div class="zuno" title="Zuno">🐻</div>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <h2>Your Learning Space</h2>
+      <p class="muted small">Explore, understand and grow at your own pace.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">📚</div>
+      <h3>Explore Subjects</h3>
+      <p>Discover learning resources for different subjects.</p>
+      <button class="btn" onclick="navigate('learn')">Explore</button>
+    </div>
+    <div class="card">
+      <div class="card-icon">✨</div>
+      <h3>Ask Zuno</h3>
+      <p>Get simple explanations and learn concepts step by step.</p>
+      <button class="btn" onclick="navigate('zuno')">Meet Zuno</button>
+    </div>
+    <div class="card">
+      <div class="card-icon">📝</div>
+      <h3>My Notes</h3>
+      <p>Write and save your own revision notes.</p>
+      <button class="btn" onclick="navigate('notes')">Open Notes</button>
+    </div>
+  </div>
+
+  <div class="section-head"><h2>Your Learning Overview</h2></div>
+  <div class="stats">
+    <div class="stat"><strong id="statLessons">0</strong><p>Lessons completed</p></div>
+    <div class="stat"><strong id="statNotes">0</strong><p>Notes saved</p></div>
+    <div class="stat"><strong id="statClass">6–10</strong><p>NCERT learning range</p></div>
+  </div>
+
+  <div class="section-head"><h2>Continue Exploring</h2></div>
+  <div class="card">
+    <h3>🐻 Zuno's message</h3>
+    <p>"Every question is a chance to discover something amazing. Let's learn together!"</p>
+    <button class="btn" onclick="navigate('zuno')">Talk to Zuno →</button>
+  </div>
+</section>
+
+<!-- LEARN -->
+<section class="page" id="learn">
+  <h1>Explore & Learn 📚</h1>
+  <p class="muted">Choose your class and discover subjects.</p>
+
+  <div class="toolbar">
+    <select id="classSelect" onchange="renderLessons()">
+      <option value="6">Class 6</option>
+      <option value="7">Class 7</option>
+      <option value="8">Class 8</option>
+      <option value="9" selected>Class 9</option>
+      <option value="10">Class 10</option>
+    </select>
+    <input id="lessonSearch" placeholder="Search subjects or topics..." oninput="renderLessons()">
+  </div>
+
+  <div class="grid" id="lessonGrid"></div>
+  <div id="lessonDetail"></div>
+</section>
+
+<!-- ZUNO AI -->
+<section class="page" id="zuno">
+  <h1>Meet Zuno AI ✨</h1>
+  <p class="muted">Your friendly AI learning teacher.</p>
+
+  <div class="ai-layout" style="margin-top:22px">
+    <div class="ai-box">
+      <div class="ai-heading">
+        <div class="zuno">🐻</div>
+        <div>
+          <h2>Zuno</h2>
+          <p class="muted small">Your personal learning companion</p>
+        </div>
       </div>
-      <h1>ZUNIFY</h1>
-      <div class="welcome-tagline">Learn • Explore • Unify</div>
-      <div class="welcome-slogan">One Platform. Endless Possibilities.</div>
-      <p style="font-size: 0.92rem; color: #f3e8ff; margin-bottom: 20px; line-height: 1.5;">
-        Hi! I’m <strong>Zuno</strong>, your curious learning companion. Learn at your own calm pace—no timers chasing you, no streak guilt, just joyful discovery!
+
+      <div class="chat-area" id="chatArea">
+        <div class="message bot">Hi! I'm Zuno! 🐻💜
+
+I'm here to make learning easier.
+
+You can ask me about a topic or choose one of my learning tools!</div>
+      </div>
+
+      <div class="chat-input">
+        <input id="chatInput" placeholder="Ask Zuno anything..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <button class="btn" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h3>What can Zuno do?</h3>
+        <p class="muted small" style="margin:7px 0 18px">Choose a learning tool.</p>
+        <div class="quick-actions">
+          <button onclick="setPrompt('Simplify these notes: ')">📖 Simplify Notes</button>
+          <button onclick="setPrompt('Teach me step by step: ')">🎓 Teach Me</button>
+          <button onclick="setPrompt('Give me examples of: ')">💡 Give Examples</button>
+          <button onclick="setPrompt('Create short revision notes on: ')">📝 Revision Notes</button>
+          <button onclick="setPrompt('Answer this doubt: ')">❓ Solve My Doubt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTES -->
+<section class="page" id="notes">
+  <h1>My Notes 📝</h1>
+  <p class="muted">Your personal space to write and save ideas.</p>
+
+  <div class="card" style="margin-top:22px">
+    <h3 id="noteFormTitle">Create a new note</h3>
+    <div class="note-form" style="margin-top:15px">
+      <input id="noteTitle" placeholder="Enter note title">
+      <select id="noteSubject">
+        <option>Science</option>
+        <option>Mathematics</option>
+        <option>Social Science</option>
+        <option>English</option>
+        <option>Other</option>
+      </select>
+      <textarea id="noteContent" placeholder="Write your notes here..."></textarea>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn" onclick="saveNote()">Save Note</button>
+        <button class="btn btn-outline" onclick="clearNoteForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Saved Notes</h2>
+    <span class="muted small" id="noteCount">0 notes</span>
+  </div>
+  <div id="notesList"></div>
+</section>
+
+<!-- PROGRESS -->
+<section class="page" id="progress">
+  <h1>My Progress 📊</h1>
+  <p class="muted">Celebrate what you have learned so far.</p>
+
+  <div class="stats" style="margin-top:24px">
+    <div class="stat"><strong id="progressLessons">0</strong><p>Completed lessons</p></div>
+    <div class="stat"><strong id="progressNotes">0</strong><p>Saved notes</p></div>
+    <div class="stat"><strong id="progressSubjects">0</strong><p>Subjects explored</p></div>
+  </div>
+
+  <div class="section-head"><h2>Your Achievements</h2></div>
+  <div class="grid" id="achievementGrid"></div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>💜 A reminder from Zuno</h3>
+    <p class="muted" style="margin-top:8px">Learning is not a race. Every concept you understand and every question you explore is progress. Keep discovering at your own pace!</p>
+  </div>
+</section>
+
+<footer>
+  <strong>ZUNIFY</strong> — Learn • Explore • Unify<br>
+  One Platform. Endless Possibilities.
+</footer>
+
+</main>
+</div>
+
+<!-- MOBILE NAVIGATION -->
+<nav class="mobile-nav">
+  <button class="active" data-page="home" onclick="navigate('home')"><span>⌂</span>Home</button>
+  <button data-page="learn" onclick="navigate('learn')"><span>📚</span>Learn</button>
+  <button data-page="zuno" onclick="navigate('zuno')"><span>🐻</span>Zuno</button>
+  <button data-page="notes" onclick="navigate('notes')"><span>📝</span>Notes</button>
+  <button data-page="progress" onclick="navigate('progress')"><span>📊</span>Progress</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ===============================
+// ZUNIFY APPLICATION
+// ===============================
+
+const STORAGE_KEY = "zunify_v1";
+
+const defaultData = {
+  dark:false,
+  notes:[],
+  completed:[],
+  explored:[],
+  selectedClass:"9"
+};
+
+let data = loadData();
+let editingNote = null;
+
+function loadData() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(saved && typeof saved === "object") {
+      return {...defaultData,...saved};
+    }
+  } catch(error) {
+    console.warn("Could not load saved data",error);
+  }
+  return {...defaultData};
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    updateDashboard();
+  } catch(error) {
+    toast("Unable to save. Check your browser storage.");
+  }
+}
+
+function toast(message) {
+  const element = document.getElementById("toast");
+  element.textContent = message;
+  element.classList.add("show");
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>element.classList.remove("show"),2300);
+}
+
+// NAVIGATION
+function navigate(page) {
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(page).classList.add("active");
+
+  document.querySelectorAll("[data-page]").forEach(button=>{
+    button.classList.toggle("active",button.dataset.page===page);
+  });
+
+  if(page==="learn") renderLessons();
+  if(page==="notes") renderNotes();
+  if(page==="progress") renderProgress();
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// THEME
+function toggleTheme() {
+  data.dark=!data.dark;
+  applyTheme();
+  saveData();
+}
+
+function applyTheme() {
+  document.body.classList.toggle("dark",data.dark);
+  document.querySelector('meta[name="theme-color"]').content =
+    data.dark ? "#171323" : "#6d28d9";
+  document.querySelectorAll(".header-actions .icon-btn")[0].textContent =
+    data.dark ? "☀️" : "🌙";
+}
+
+// LEARNING CONTENT
+const subjects = [
+  {
+    name:"Science",
+    icon:"🔬",
+    description:"Explore the world through scientific discoveries.",
+    topics:[
+      "Matter in Our Surroundings",
+      "The Fundamental Unit of Life",
+      "Tissues",
+      "Motion",
+      "Force and Laws of Motion",
+      "Gravitation"
+    ]
+  },
+  {
+    name:"Mathematics",
+    icon:"📐",
+    description:"Understand numbers, shapes and patterns.",
+    topics:[
+      "Number Systems",
+      "Polynomials",
+      "Coordinate Geometry",
+      "Linear Equations",
+      "Triangles",
+      "Circles"
+    ]
+  },
+  {
+    name:"Social Science",
+    icon:"🌍",
+    description:"Discover history, geography and society.",
+    topics:[
+      "The French Revolution",
+      "Socialism in Europe",
+      "India: Size and Location",
+      "Physical Features of India",
+      "Democracy",
+      "Constitutional Design"
+    ]
+  },
+  {
+    name:"English",
+    icon:"📖",
+    description:"Explore language, literature and communication.",
+    topics:[
+      "Reading Comprehension",
+      "Grammar",
+      "Writing Skills",
+      "Poetry",
+      "Prose",
+      "Vocabulary"
+    ]
+  },
+  {
+    name:"Computer Science",
+    icon:"💻",
+    description:"Discover technology and digital creativity.",
+    topics:[
+      "Computer Fundamentals",
+      "Internet Basics",
+      "HTML Basics",
+      "Programming Concepts",
+      "Digital Safety"
+    ]
+  },
+  {
+    name:"Creative Skills",
+    icon:"🎨",
+    description:"Explore creativity, design and new skills.",
+    topics:[
+      "Creative Thinking",
+      "Drawing and Design",
+      "Problem Solving",
+      "Communication",
+      "Digital Creativity"
+    ]
+  }
+];
+
+// Basic prototype lessons. Replace or expand with verified
+// class-specific NCERT material as the project develops.
+function lessonText(topic,subject) {
+  const known = {
+    "Matter in Our Surroundings": {
+      intro:"Matter is anything that has mass and occupies space.",
+      points:["Matter is made up of tiny particles.","Particles have spaces between them.","Particles are continuously moving.","Particles attract one another."],
+      example:"Ice, water and water vapour are different states of the same substance."
+    },
+    "The Fundamental Unit of Life": {
+      intro:"The cell is the basic structural and functional unit of life.",
+      points:["Cells form the bodies of living organisms.","The cell membrane controls the movement of substances.","The nucleus contains genetic material.","The cytoplasm contains cell organelles."],
+      example:"A plant cell has a cell wall and chloroplasts, while an animal cell does not."
+    },
+    "Tissues": {
+      intro:"A tissue is a group of similar cells that work together to perform a particular function.",
+      points:["Plant tissues include meristematic and permanent tissues.","Animal tissues include epithelial, connective, muscular and nervous tissues.","Different tissues perform different functions."],
+      example:"Muscle tissue helps in body movement."
+    },
+    "Motion": {
+      intro:"Motion is the change in position of an object with time.",
+      points:["Distance is the total path travelled.","Displacement is the shortest directed distance between initial and final positions.","Speed is distance travelled per unit time.","Velocity is displacement per unit time.","Acceleration is the rate of change of velocity."],
+      example:"A car moving along a straight road changes its position with time."
+    },
+    "Force and Laws of Motion": {
+      intro:"A force is a push or pull that can change an object's state of motion or shape.",
+      points:["Newton's first law describes inertia.","Newton's second law relates force, mass and acceleration: F = ma.","Newton's third law states that every action has an equal and opposite reaction."],
+      example:"When you push a wall, the wall exerts an equal and opposite force on you."
+    },
+    "Gravitation": {
+      intro:"Gravitation is the force of attraction between any two objects having mass.",
+      points:["Every object attracts every other object.","The force depends on the masses and distance between objects.","Gravity is the Earth's gravitational pull.","The acceleration due to gravity near Earth's surface is approximately 9.8 m/s²."],
+      example:"An object falls towards the ground because Earth attracts it through gravity."
+    }
+  };
+
+  const info = known[topic];
+
+  if(info) {
+    return `
+      <p>${info.intro}</p>
+      <h2>Important Points</h2>
+      <ul>${info.points.map(p=>`<li>${p}</li>`).join("")}</ul>
+      <h2>Example</h2>
+      <p>${info.example}</p>
+      <h2>Remember</h2>
+      <p>Understand the concept first, then revise the important points.</p>
+    `;
+  }
+
+  return `
+    <p>Welcome to the topic <strong>${escapeHTML(topic)}</strong>.</p>
+    <h2>What you will explore</h2>
+    <ul>
+      <li>Understand the meaning of ${escapeHTML(topic)}.</li>
+      <li>Learn its important concepts and definitions.</li>
+      <li>Explore examples and real-world applications.</li>
+      <li>Prepare short revision notes.</li>
+    </ul>
+    <h2>Learning tip</h2>
+    <p>Read your textbook section, identify the key ideas and ask Zuno to explain anything you find difficult.</p>
+    <p class="muted small">This is starter content, not a complete or verified NCERT chapter.</p>
+  `;
+}
+
+function renderLessons() {
+  const classNo = document.getElementById("classSelect").value;
+  data.selectedClass=classNo;
+  const search = document.getElementById("lessonSearch").value.toLowerCase();
+
+  const grid = document.getElementById("lessonGrid");
+  grid.innerHTML="";
+
+  subjects.forEach(subject=>{
+    const filtered = subject.topics.filter(topic=>
+      (topic+" "+subject.name).toLowerCase().includes(search)
+    );
+
+    if(filtered.length===0) return;
+
+    const card=document.createElement("div");
+    card.className="card lesson-card";
+    card.innerHTML=`
+      <div class="card-icon">${subject.icon}</div>
+      <span class="tag">CLASS ${classNo}</span>
+      <h3>${subject.name}</h3>
+      <p>${subject.description}</p>
+      <p style="margin-top:12px;color:var(--primary);font-weight:600">
+        ${filtered.length} topics available
       </p>
-      <div class="welcome-input-group">
-        <input type="text" id="welcomeNameInput" placeholder="Enter your first name..." />
-        <select id="welcomeClassSelect">
-          <option value="Class 6">NCERT Class 6</option>
-          <option value="Class 7">NCERT Class 7</option>
-          <option value="Class 8" selected>NCERT Class 8</option>
-          <option value="Class 9">NCERT Class 9</option>
-          <option value="Class 10">NCERT Class 10</option>
-        </select>
-      </div>
-      <button class="btn-gold" id="enterPlatformBtn">Start Exploring with Zuno ✨</button>
-    </div>
-  </div>
+      <button class="btn" onclick="showTopics('${subject.name}')">Explore Topics →</button>
+    `;
+    grid.appendChild(card);
+  });
 
-  <!-- SIDEBAR NAVIGATION -->
-  <aside id="sidebar">
-    <div class="logo-wrap">
-      <svg width="42" height="42"><use href="#zuno-mascot"/></svg>
-      <div>
-        <div class="logo-title">ZUNIFY</div>
-        <div class="logo-sub">Learn • Explore • Unify</div>
-      </div>
-    </div>
+  if(!grid.children.length) {
+    grid.innerHTML='<div class="empty">No matching subjects or topics found.</div>';
+  }
 
-    <div class="nav-links">
-      <button class="nav-item active" data-tab="dashboard">🏠 Dashboard</button>
-      <button class="nav-item" data-tab="academics">📚 NCERT Academics (6–10)</button>
-      <button class="nav-item" data-tab="skills">🎨 Skills Academy</button>
-      <button class="nav-item" data-tab="future">🧭 Future Planning</button>
-      <button class="nav-item" data-tab="smarter">🧠 Study Smarter</button>
-      <button class="nav-item" data-tab="journey">🌟 My Journey</button>
-      <button class="nav-item" data-tab="hub">🔭 Knowledge Hub</button>
-      <button class="nav-item" data-tab="notes">📝 Quick Notes</button>
-    </div>
+  saveData();
+}
 
-    <div class="sidebar-bottom">
-      <button class="theme-btn" id="darkModeToggle">🌙 Dark Mode</button>
-    </div>
-  </aside>
+function showTopics(subjectName) {
+  const subject=subjects.find(s=>s.name===subjectName);
+  if(!subject) return;
 
-  <!-- MAIN WORKSPACE -->
-  <main>
-    <!-- TOP BAR -->
-    <div class="topbar">
-      <div class="topbar-left">
-        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="globalSearchInput" placeholder="Search NCERT chapters, skills, careers..." />
-          <div class="search-results-dropdown" id="searchDropdown"></div>
-        </div>
-      </div>
+  data.explored=[...new Set([...data.explored,subjectName])];
+  saveData();
 
-      <div class="student-pill">
-        <span class="gold-dot"></span>
-        <span id="headerStudentInfo">Explorer • Class 8</span>
-      </div>
-    </div>
-
-    <!-- 1. DASHBOARD -->
-    <section id="dashboard" class="page-section active">
-      <div class="hero-banner">
-        <div class="hero-text">
-          <h2 id="dashGreeting">Welcome back, Explorer!</h2>
-          <p>One Platform. Endless Possibilities. Pick up any NCERT concept, creative skill, or future career path whenever you feel inspired.</p>
-          <div class="calm-pill">
-            <span>💜</span>
-            <span>Your pace is wonderful. Every step forward counts!</span>
-          </div>
-        </div>
-        <div style="flex-shrink:0; text-align:center;">
-          <svg width="124" height="124"><use href="#zuno-mascot"/></svg>
-          <div style="font-size:0.78rem; color:#fef3c7; font-weight:600;">Zuno is cheering for you!</div>
-        </div>
-      </div>
-
-      <div class="grid-3" style="margin-bottom: 24px;">
+  const detail=document.getElementById("lessonDetail");
+  detail.innerHTML=`
+    <div class="section-head"><h2>${subject.icon} ${subject.name} Topics</h2></div>
+    <div class="grid">
+      ${subject.topics.map(topic=>`
         <div class="card">
-          <span class="badge">📚 NCERT Academics</span>
-          <h3 style="margin: 12px 0 6px;" id="dashLessonsCount">0 Lessons Explored</h3>
-          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px;">Interactive diagrams, clear examples & self-paced quizzes for Classes 6–10.</p>
-          <button class="btn btn-primary" onclick="switchTab('academics')">Open NCERT Hub</button>
+          <span class="tag">LEARNING TOPIC</span>
+          <h3>${escapeHTML(topic)}</h3>
+          <p>Explore the important concepts in this topic.</p>
+          <button class="btn" onclick="openLesson('${encodeURIComponent(topic)}','${encodeURIComponent(subject.name)}')">Start Learning →</button>
         </div>
-
-        <div class="card">
-          <span class="badge badge-gold">🎨 Skills Academy</span>
-          <h3 style="margin: 12px 0 6px;" id="dashSkillsCount">0 Certificates Earned</h3>
-          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px;">Art, Animation, Coding, Music, Communication & Critical Thinking.</p>
-          <button class="btn btn-primary" onclick="switchTab('skills')">Explore Skills</button>
-        </div>
-
-        <div class="card">
-          <span class="badge badge-success">🧭 Future Compass</span>
-          <h3 style="margin: 12px 0 6px;">Streams & Scholarships</h3>
-          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px;">Discover careers, streams after Class 10, colleges & student scholarships.</p>
-          <button class="btn btn-primary" onclick="switchTab('future')">Plan Your Future</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
-          <div>
-            <h3>✨ Overall Learning Progress</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted);">Saved locally on your device. Take breaks anytime—your progress stays safe.</p>
-          </div>
-          <span class="badge badge-gold" id="overallPercentBadge">0% Explored</span>
-        </div>
-        <div class="progress-bar" style="margin-top: 14px; height: 14px;">
-          <div class="progress-fill" id="overallProgressFill" style="width: 0%;"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. NCERT ACADEMICS (CLASSES 6-10) -->
-    <section id="academics" class="page-section">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
-        <div>
-          <h2>📚 NCERT Learning Studio (Classes 6–10)</h2>
-          <p style="color: var(--text-muted); font-size: 0.92rem;">Visual diagrams, real-world examples, and friendly practice quizzes.</p>
-        </div>
-        <div class="pill-tabs" id="classFilterTabs" style="margin-bottom:0;">
-          <button class="pill-tab active" data-class="All">All Classes</button>
-          <button class="pill-tab" data-class="Class 6">Class 6</button>
-          <button class="pill-tab" data-class="Class 7">Class 7</button>
-          <button class="pill-tab" data-class="Class 8">Class 8</button>
-          <button class="pill-tab" data-class="Class 9">Class 9</button>
-          <button class="pill-tab" data-class="Class 10">Class 10</button>
-        </div>
-      </div>
-
-      <div class="grid-3" id="ncertCardsGrid"></div>
-
-      <!-- Interactive Lesson & Diagram Workspace -->
-      <div id="lessonWorkspace" class="card" style="margin-top: 24px; display: none;"></div>
-    </section>
-
-    <!-- 3. SKILLS ACADEMY -->
-    <section id="skills" class="page-section">
-      <div style="margin-bottom: 18px;">
-        <h2>🎨 ZUNIFY Skills Academy</h2>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Complete lessons, hands-on mini-projects, and unlock personalized completion certificates!</p>
-      </div>
-
-      <div class="grid-3" id="skillsGrid"></div>
-
-      <!-- Active Skill Course Panel -->
-      <div id="skillCoursePanel" class="card" style="margin-top: 24px; display: none;"></div>
-    </section>
-
-    <!-- 4. FUTURE PLANNING -->
-    <section id="future" class="page-section">
-      <div style="margin-bottom: 18px;">
-        <h2>🧭 Future Planning & Discovery Compass</h2>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Explore your natural interests, streams after Class 10, colleges, entrance exams, and scholarships.</p>
-      </div>
-
-      <div class="pill-tabs" id="futureTabs">
-        <button class="pill-tab active" data-ftab="interest">✨ Interest & Talent Finder</button>
-        <button class="pill-tab" data-ftab="streams">🎓 Educational Streams</button>
-        <button class="pill-tab" data-ftab="careers">🚀 Careers, Degrees & Exams</button>
-        <button class="pill-tab" data-ftab="scholarships">🏅 Scholarships & Olympiads</button>
-      </div>
-
-      <div id="futureContentArea"></div>
-    </section>
-
-    <!-- 5. STUDY SMARTER -->
-    <section id="smarter" class="page-section">
-      <div style="margin-bottom: 18px;">
-        <h2>🧠 Study Smarter Toolkit</h2>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Science-backed learning techniques designed for calm, deep understanding.</p>
-      </div>
-
-      <div class="pill-tabs" id="smarterTabs">
-        <button class="pill-tab active" data-stab="recall">🃏 Active Recall</button>
-        <button class="pill-tab" data-stab="spaced">📅 Spaced Repetition</button>
-        <button class="pill-tab" data-stab="feynman">🧸 Feynman Technique</button>
-        <button class="pill-tab" data-stab="mindmap">🕸️ Mind Mapping</button>
-        <button class="pill-tab" data-stab="pomodoro">⏱️ Calm Focus Timer</button>
-      </div>
-
-      <div id="smarterContentArea" class="card"></div>
-    </section>
-
-    <!-- 6. MY JOURNEY -->
-    <section id="journey" class="page-section">
-      <div style="margin-bottom: 18px;">
-        <h2>🌟 My Learning Journey</h2>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Celebrate every milestone you achieve—no comparisons, no pressure.</p>
-      </div>
-
-      <div class="grid-2" style="margin-bottom: 22px;">
-        <div class="card">
-          <h3>🎯 Personal Learning Goals</h3>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Set gentle intentions for what you want to explore next.</p>
-          <div style="display:flex; gap:8px; margin-bottom:14px;">
-            <input type="text" id="goalInput" placeholder="e.g., Understand Light reflection diagrams..." style="flex:1; padding:10px 14px; border-radius:12px; border:1px solid var(--card-border); background:var(--bg-soft); color:var(--text);" />
-            <button class="btn btn-primary" id="addGoalBtn">Add Goal</button>
-          </div>
-          <div id="goalsList" style="display:flex; flex-direction:column; gap:8px;"></div>
-        </div>
-
-        <div class="card">
-          <h3>🏆 Celebrated Achievements</h3>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Badges unlocked by exploring lessons, skills, and study tools.</p>
-          <div id="achievementsGrid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px;"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>📜 Earned Skill Certificates</h3>
-        <div id="earnedCertsList" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:12px;"></div>
-      </div>
-    </section>
-
-    <!-- 7. KNOWLEDGE HUB -->
-    <section id="hub" class="page-section">
-      <div style="margin-bottom: 18px;">
-        <h2>🔭 Knowledge Hub</h2>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Curated educational updates, scientific discoveries, student competitions, and national opportunities.</p>
-      </div>
-      <div class="grid-2" id="knowledgeHubGrid"></div>
-    </section>
-
-    <!-- 8. QUICK NOTES -->
-    <section id="notes" class="page-section">
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
-          <div>
-            <h2>📝 Quick Notes & Revision Pad</h2>
-            <p style="font-size:0.88rem; color:var(--text-muted);">Jot down formulas, definitions, or creative ideas. Automatically saved locally.</p>
-          </div>
-          <span class="badge badge-success" id="notesSavedBadge">✓ Auto-saved locally</span>
-        </div>
-        <textarea id="quickNotesArea" class="notes-pad" placeholder="Write your NCERT summary, science formulas, or story ideas here..."></textarea>
-      </div>
-    </section>
-  </main>
-
-  <!-- FLOATING ZUNO AI COMPANION -->
-  <button id="zunoFloatingBtn" title="Chat with Zuno AI Companion">
-    <svg width="54" height="54"><use href="#zuno-mascot"/></svg>
-  </button>
-
-  <div id="zunoChatWindow">
-    <div class="chat-header">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <svg width="34" height="34"><use href="#zuno-mascot"/></svg>
-        <div>
-          <div style="font-weight:700; font-size:0.95rem;">Zuno AI Companion</div>
-          <div style="font-size:0.75rem; opacity:0.9;">Curious • Kind • Ready to help</div>
-        </div>
-      </div>
-      <button id="closeZunoChat" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">✕</button>
+      `).join("")}
     </div>
-    <div class="chat-messages" id="zunoChatMessages">
-      <div class="msg msg-zuno">
-        Hi there! I’m <strong>Zuno</strong> 💜 Ask me to explain an NCERT concept simply, suggest a creative skill project, or help you explore future careers!
+  `;
+  detail.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function openLesson(encodedTopic,encodedSubject) {
+  const topic=decodeURIComponent(encodedTopic);
+  const subject=decodeURIComponent(encodedSubject);
+
+  const detail=document.getElementById("lessonDetail");
+  const key=subject+"|"+topic;
+  const done=data.completed.includes(key);
+
+  detail.innerHTML=`
+    <div class="section-head">
+      <h2>${escapeHTML(topic)}</h2>
+    </div>
+    <div class="lesson-detail">
+      <span class="tag">${escapeHTML(subject)} • CLASS ${data.selectedClass}</span>
+      ${lessonText(topic,subject)}
+      <button class="btn" onclick="completeLesson('${encodeURIComponent(key)}')">
+        ${done?"✓ Completed":"Mark as Completed"}
+      </button>
+      <button class="btn btn-outline" onclick="askZuno('${encodeURIComponent(topic)}')">
+        Ask Zuno about this →
+      </button>
+    </div>
+  `;
+  detail.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function completeLesson(encodedKey) {
+  const key=decodeURIComponent(encodedKey);
+  if(!data.completed.includes(key)) {
+    data.completed.push(key);
+    saveData();
+    toast("Great work! Lesson completed 🎉");
+  } else {
+    toast("This lesson is already completed.");
+  }
+  renderLessons();
+  updateDashboard();
+}
+
+// NOTES
+function saveNote() {
+  const title=document.getElementById("noteTitle").value.trim();
+  const content=document.getElementById("noteContent").value.trim();
+  const subject=document.getElementById("noteSubject").value;
+
+  if(!title || !content) {
+    toast("Please enter a title and note.");
+    return;
+  }
+
+  if(editingNote!==null) {
+    const note=data.notes.find(n=>n.id===editingNote);
+    if(note) {
+      note.title=title;
+      note.content=content;
+      note.subject=subject;
+      note.updated=new Date().toLocaleDateString();
+    }
+    editingNote=null;
+  } else {
+    data.notes.unshift({
+      id:Date.now(),
+      title,content,subject,
+      updated:new Date().toLocaleDateString()
+    });
+  }
+
+  saveData();
+  clearNoteForm();
+  renderNotes();
+  toast("Note saved successfully! 💜");
+}
+
+function clearNoteForm() {
+  document.getElementById("noteTitle").value="";
+  document.getElementById("noteContent").value="";
+  editingNote=null;
+  document.getElementById("noteFormTitle").textContent="Create a new note";
+}
+
+function renderNotes() {
+  const list=document.getElementById("notesList");
+  document.getElementById("noteCount").textContent=data.notes.length+" notes";
+
+  if(!data.notes.length) {
+    list.innerHTML='<div class="empty">📝<br><br>Your notes will appear here.<br>Create your first note above!</div>';
+    return;
+  }
+
+  list.innerHTML=data.notes.map(note=>`
+    <div class="note-item">
+      <span class="tag">${escapeHTML(note.subject)}</span>
+      <h3>${escapeHTML(note.title)}</h3>
+      <p style="white-space:pre-wrap">${escapeHTML(note.content)}</p>
+      <p class="muted small" style="margin-top:10px">Last updated: ${escapeHTML(note.updated||"")}</p>
+      <div class="note-actions">
+        <button onclick="editNote(${note.id})">✏️ Edit</button>
+        <button onclick="deleteNote(${note.id})">🗑 Delete</button>
       </div>
     </div>
-    <div class="chat-input-row">
-      <input type="text" id="zunoChatInput" placeholder="Ask Zuno anything..." />
-      <button class="btn btn-primary" id="zunoSendBtn" style="padding:8px 14px;">Send</button>
+  `).join("");
+}
+
+function editNote(id) {
+  const note=data.notes.find(n=>n.id===id);
+  if(!note) return;
+
+  editingNote=id;
+  document.getElementById("noteTitle").value=note.title;
+  document.getElementById("noteContent").value=note.content;
+  document.getElementById("noteSubject").value=note.subject;
+  document.getElementById("noteFormTitle").textContent="Edit your note";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function deleteNote(id) {
+  if(!confirm("Are you sure you want to delete this note?")) return;
+  data.notes=data.notes.filter(n=>n.id!==id);
+  saveData();
+  renderNotes();
+  toast("Note deleted.");
+}
+
+// ZUNO AI PROTOTYPE
+function addMessage(text,type) {
+  const area=document.getElementById("chatArea");
+  const msg=document.createElement("div");
+  msg.className="message "+type;
+  msg.textContent=text;
+  area.appendChild(msg);
+  area.scrollTop=area.scrollHeight;
+}
+
+function setPrompt(prompt) {
+  const input=document.getElementById("chatInput");
+  input.value=prompt;
+  input.focus();
+}
+
+function askZuno(topic) {
+  navigate("zuno");
+  document.getElementById("chatInput").value=
+    "Teach me step by step: "+decodeURIComponent(topic);
+  sendMessage();
+}
+
+function sendMessage() {
+  const input=document.getElementById("chatInput");
+  const question=input.value.trim();
+  if(!question) return;
+
+  addMessage(question,"user");
+  input.value="";
+
+  setTimeout(()=>{
+    addMessage(getZunoResponse(question),"bot");
+  },350);
+}
+
+function getZunoResponse(question) {
+  const q=question.toLowerCase();
+  const topic=question.split(":").slice(1).join(":").trim()||question;
+
+  if(q.includes("hello")||q.includes("hi")) {
+    return "Hey there! 🐻💜 What would you like to learn today?";
+  }
+
+  if(q.includes("simplify")||q.includes("notes")) {
+    return "📖 LET'S SIMPLIFY!\n\nTopic: "+topic+
+    "\n\n1. Identify the main idea.\n2. Understand the important terms.\n3. Break complicated sentences into smaller points.\n4. Write a short summary in your own words.\n\nPaste your actual notes into the chat so this prototype can help organize them.";
+  }
+
+  if(q.includes("step by step")||q.includes("teach")) {
+    return "🎓 LET'S LEARN STEP BY STEP!\n\nTopic: "+topic+
+    "\n\nStep 1: Understand what the topic means.\n\nStep 2: Identify its important concepts.\n\nStep 3: Look at a simple example.\n\nStep 4: Revise the main points.\n\nStep 5: Try answering a question yourself!\n\nRemember: Understanding is more important than memorising.";
+  }
+
+  if(q.includes("example")) {
+    return "💡 EXAMPLE TIME!\n\nTopic: "+topic+
+    "\n\nThink about where you might see this concept in everyday life. Connect the definition to a real-world situation, then explain why the example fits.";
+  }
+
+  if(q.includes("revision")) {
+    return "📝 REVISION NOTES\n\nTopic: "+topic+
+    "\n\n• Learn the definition.\n• Remember the important terms.\n• Understand the key concepts.\n• Study one example.\n• Practise a question.\n\nAdd your textbook content for a more accurate topic-specific revision.";
+  }
+
+  if(q.includes("doubt")||q.includes("why")||q.includes("how")) {
+    return "❓ LET'S SOLVE YOUR DOUBT!\n\nYour question: "+question+
+    "\n\nFirst, identify the concept behind your question. Then break it into smaller parts and look at each part separately.\n\nThis prototype does not yet have a connected AI model, so it cannot reliably answer every factual question. A secure AI backend will enable genuine doubt-solving.";
+  }
+
+  return "That's an interesting question! 🐻\n\nYou asked: "+question+
+  "\n\nI am currently running in prototype mode. My learning tools demonstrate the Zuno experience, but a real AI model connection is needed for intelligent, accurate answers to arbitrary questions.";
+}
+
+// PROGRESS
+function renderProgress() {
+  updateDashboard();
+
+  const grid=document.getElementById("achievementGrid");
+  const achievements=[
+    {icon:"🌱",title:"First Steps",desc:"Complete your first lesson.",ok:data.completed.length>=1},
+    {icon:"📚",title:"Knowledge Explorer",desc:"Complete five lessons.",ok:data.completed.length>=5},
+    {icon:"📝",title:"Note Creator",desc:"Save your first note.",ok:data.notes.length>=1},
+    {icon:"🔍",title:"Curious Mind",desc:"Explore three subjects.",ok:data.explored.length>=3}
+  ];
+
+  grid.innerHTML=achievements.map(a=>`
+    <div class="card">
+      <div class="card-icon">${a.icon}</div>
+      <h3>${a.title}</h3>
+      <p>${a.desc}</p>
+      <p style="margin-top:12px;font-weight:700;color:${a.ok?'#16a34a':'var(--muted)'}">
+        ${a.ok?"✓ Achieved":"Not yet achieved"}
+      </p>
     </div>
-  </div>
-
-  <!-- CERTIFICATE MODAL -->
-  <div class="modal-backdrop" id="certModal">
-    <div class="certificate-card">
-      <svg width="68" height="68" style="margin-bottom:8px;"><use href="#zuno-mascot"/></svg>
-      <div style="color:#b45309; font-weight:800; letter-spacing:2px; font-size:0.85rem;">ZUNIFY SKILLS ACADEMY</div>
-      <h2 style="font-size:1.9rem; color:#4c1d95; margin:8px 0;">Certificate of Exploration</h2>
-      <p style="font-size:0.95rem; color:#5b4b7a;">This proudly celebrates</p>
-      <h3 id="certStudentName" style="font-size:1.6rem; color:#221738; margin:10px 0; border-bottom:2px solid #f59e0b; display:inline-block; padding:0 24px 4px;">Student Explorer</h3>
-      <p style="font-size:0.95rem; color:#5b4b7a; margin-top:8px;">for completing all lessons and mini-project milestones in</p>
-      <h4 id="certCourseTitle" style="font-size:1.25rem; color:#6d28d9; margin:10px 0 18px;">Creative Skill Track</h4>
-      <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#675885; border-top:1px solid #e5dafc; padding-top:14px;">
-        <span>ZUNIFY • Learn • Explore • Unify</span>
-        <span id="certDateText">Issued Today</span>
-      </div>
-      <button class="btn btn-primary" style="margin-top:20px;" onclick="document.getElementById('certModal').classList.remove('open')">Close Certificate</button>
-    </div>
-  </div>
-
-  <script>
-    /* ================= DATA REPOSITORY ================= */
-    const NCERT_LESSONS = [
-      {
-        id: "ncert-6-sci",
-        classLevel: "Class 6",
-        subject: "Science",
-        title: "Components of Food & Balanced Diet",
-        summary: "Discover how carbohydrates, proteins, fats, vitamins, and minerals keep our bodies energized and growing.",
-        example: "Real-life Example: A traditional Indian thali with dal (proteins), roti/rice (carbohydrates), ghee (healthy fats), and sabzi/salad (vitamins & minerals) forms a naturally balanced meal!",
-        zunoTip: "Remember: Proteins are body-building foods, while carbohydrates and fats are energy-giving foods!",
-        diagramSVG: `
-          <svg width="100%" height="150" viewBox="0 0 420 150">
-            <circle cx="210" cy="75" r="58" fill="#ede9fe" stroke="#6d28d9" stroke-width="3"/>
-            <path d="M210,75 L210,17 A58,58 0 0,1 268,75 Z" fill="#8b5cf6"/>
-            <path d="M210,75 L268,75 A58,58 0 0,1 210,133 Z" fill="#f59e0b"/>
-            <path d="M210,75 L210,133 A58,58 0 0,1 152,75 Z" fill="#10b981"/>
-            <text x="65" y="45" fill="#6d28d9" font-size="12" font-weight="bold">Carbs & Fats (Energy)</text>
-            <text x="282" y="45" fill="#6d28d9" font-size="12" font-weight="bold">Proteins (Growth)</text>
-            <text x="282" y="115" fill="#b45309" font-size="12" font-weight="bold">Vitamins (Protection)</text>
-            <text x="55" y="115" fill="#065f46" font-size="12" font-weight="bold">Minerals & Water</text>
-          </svg>`,
-        quiz: {
-          question: "Which nutrient group is primarily known as 'body-building food'?",
-          options: ["Carbohydrates", "Proteins", "Roughage"],
-          answer: 1
-        }
-      },
-      {
-        id: "ncert-7-sci",
-        classLevel: "Class 7",
-        subject: "Science",
-        title: "Nutrition in Plants: Photosynthesis",
-        summary: "How green leaves act like solar-powered kitchens using sunlight, chlorophyll, water, and carbon dioxide.",
-        example: "Equation: Carbon Dioxide + Water —(Sunlight & Chlorophyll)→ Glucose (Food) + Oxygen.",
-        zunoTip: "Stomata are tiny pores on the underside of leaves that breathe in CO₂ and release fresh oxygen!",
-        diagramSVG: `
-          <svg width="100%" height="150" viewBox="0 0 420 150">
-            <circle cx="65" cy="40" r="22" fill="#f59e0b"/>
-            <line x1="92" y1="50" x2="155" y2="72" stroke="#f59e0b" stroke-width="3" stroke-dasharray="4"/>
-            <ellipse cx="220" cy="80" rx="65" ry="32" fill="#10b981"/>
-            <line x1="160" y1="80" x2="280" y2="80" stroke="#065f46" stroke-width="2"/>
-            <text x="35" y="82" fill="#b45309" font-size="11" font-weight="bold">Sunlight Energy</text>
-            <text x="188" y="76" fill="white" font-size="12" font-weight="bold">Chlorophyll</text>
-            <text x="300" y="65" fill="#6d28d9" font-size="12" font-weight="bold">→ Oxygen (O₂)</text>
-            <text x="300" y="95" fill="#6d28d9" font-size="12" font-weight="bold">→ Glucose Food</text>
-          </svg>`,
-        quiz: {
-          question: "Which green pigment helps leaves capture energy from sunlight?",
-          options: ["Chlorophyll", "Haemoglobin", "Starch"],
-          answer: 0
-        }
-      },
-      {
-        id: "ncert-8-math",
-        classLevel: "Class 8",
-        subject: "Mathematics",
-        title: "Understanding Quadrilaterals & Angle Sum",
-        summary: "Explore polygons with 4 sides and discover why the interior angles of any quadrilateral always add up to 360°.",
-        example: "Split any quadrilateral along one diagonal: you get 2 triangles! Since each triangle has 180°, 2 × 180° = 360°.",
-        zunoTip: "Squares, rectangles, rhombuses, and parallelograms are all special members of the quadrilateral family!",
-        diagramSVG: `
-          <svg width="100%" height="150" viewBox="0 0 420 150">
-            <polygon points="130,30 290,30 320,120 100,120" fill="#ede9fe" stroke="#6d28d9" stroke-width="3"/>
-            <line x1="130" y1="30" x2="320" y2="120" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5"/>
-            <text x="165" y="95" fill="#6d28d9" font-size="12" font-weight="bold">Triangle 1 = 180°</text>
-            <text x="215" y="60" fill="#b45309" font-size="12" font-weight="bold">Triangle 2 = 180°</text>
-            <text x="145" y="142" fill="#221738" font-size="12" font-weight="bold">Total Sum = 180° + 180° = 360°</text>
-          </svg>`,
-        quiz: {
-          question: "If three angles of a quadrilateral are 90°, 90°, and 80°, what is the fourth angle?",
-          options: ["90°", "100°", "110°"],
-          answer: 1
-        }
-      },
-      {
-        id: "ncert-9-sci",
-        classLevel: "Class 9",
-        subject: "Science",
-        title: "Motion: Speed, Velocity & Acceleration",
-        summary: "Understand how objects move along a straight line and the difference between scalar speed and vector velocity.",
-        example: "If you walk 100m East and 100m West back to start, your distance is 200m, but your displacement is 0m!",
-        zunoTip: "Velocity is simply speed with a direction! Changing either speed or direction creates acceleration.",
-        diagramSVG: `
-          <svg width="100%" height="145" viewBox="0 0 420 145">
-            <line x1="60" y1="75" x2="360" y2="75" stroke="#8b5cf6" stroke-width="4"/>
-            <circle cx="60" cy="75" r="10" fill="#6d28d9"/>
-            <circle cx="360" cy="75" r="10" fill="#f59e0b"/>
-            <text x="42" y="105" fill="#6d28d9" font-size="12" font-weight="bold">Start (A)</text>
-            <text x="342" y="105" fill="#b45309" font-size="12" font-weight="bold">End (B)</text>
-            <text x="140" y="55" fill="#221738" font-size="12" font-weight="bold">Velocity = Displacement / Time</text>
-          </svg>`,
-        quiz: {
-          question: "What is the SI unit of acceleration?",
-          options: ["m/s", "m/s²", "km/h"],
-          answer: 1
-        }
-      },
-      {
-        id: "ncert-10-sci",
-        classLevel: "Class 10",
-        subject: "Science",
-        title: "Light: Reflection by Concave & Convex Mirrors",
-        summary: "Master principal focus, center of curvature, and how spherical mirrors form real or virtual images.",
-        example: "Dentists use concave mirrors to see an enlarged image of teeth, while vehicle rear-view mirrors use convex mirrors for a wider field of view.",
-        zunoTip: "Remember the mirror formula: 1/f = 1/v + 1/u. Always check sign conventions calmly!",
-        diagramSVG: `
-          <svg width="100%" height="150" viewBox="0 0 420 150">
-            <line x1="40" y1="75" x2="360" y2="75" stroke="#675885" stroke-width="2"/>
-            <path d="M310,25 Q340,75 310,125" fill="none" stroke="#6d28d9" stroke-width="4"/>
-            <line x1="70" y1="45" x2="322" y2="45" stroke="#f59e0b" stroke-width="2.5"/>
-            <line x1="322" y1="45" x2="180" y2="105" stroke="#f59e0b" stroke-width="2.5"/>
-            <circle cx="245" cy="75" r="4" fill="#6d28d9"/>
-            <text x="238" y="95" fill="#6d28d9" font-size="12" font-weight="bold">Focus (F)</text>
-            <circle cx="170" cy="75" r="4" fill="#6d28d9"/>
-            <text x="163" y="95" fill="#6d28d9" font-size="12" font-weight="bold">C</text>
-          </svg>`,
-        quiz: {
-          question: "Which mirror is used as a rear-view mirror in vehicles for a wider field of view?",
-          options: ["Concave Mirror", "Convex Mirror", "Plane Mirror"],
-          answer: 1
-        }
-      },
-      {
-        id: "ncert-10-math",
-        classLevel: "Class 10",
-        subject: "Mathematics",
-        title: "Introduction to Trigonometry",
-        summary: "Connect the angles of a right-angled triangle with the ratios of its sides: sin, cos, and tan.",
-        example: "Using trigonometry, engineers measure the height of mountains or towers without climbing to the top!",
-        zunoTip: "Use the friendly memory trick: SOH-CAH-TOA (Sin = Opp/Hyp, Cos = Adj/Hyp, Tan = Opp/Adj).",
-        diagramSVG: `
-          <svg width="100%" height="150" viewBox="0 0 420 150">
-            <polygon points="120,120 290,120 290,35" fill="#ede9fe" stroke="#6d28d9" stroke-width="3"/>
-            <rect x="275" y="105" width="15" height="15" fill="none" stroke="#6d28d9" stroke-width="2"/>
-            <text x="145" y="112" fill="#f59e0b" font-size="13" font-weight="bold">θ</text>
-            <text x="180" y="138" fill="#221738" font-size="12" font-weight="bold">Adjacent (Base)</text>
-            <text x="300" y="82" fill="#6d28d9" font-size="12" font-weight="bold">Opposite</text>
-            <text x="145" y="68" fill="#b45309" font-size="12" font-weight="bold">Hypotenuse</text>
-          </svg>`,
-        quiz: {
-          question: "In a right triangle, what is tan(θ) equal to?",
-          options: ["Opposite / Adjacent", "Adjacent / Hypotenuse", "Opposite / Hypotenuse"],
-          answer: 0
-        }
-      }
-    ];
-
-    const SKILLS_COURSES = [
-      {
-        id: "skill-art",
-        icon: "🎨",
-        title: "Drawing & Digital Art",
-        level: "Beginner Friendly",
-        desc: "Master shapes, shading, color harmony, and character sketching.",
-        lessons: ["Lesson 1: Breaking Complex Objects into Basic Shapes", "Lesson 2: Light, Shadow & Lavender-Gold Color Harmony", "Lesson 3: Designing Expressive Characters like Zuno"],
-        activity: "Sketch an original mascot or peaceful study corner using 3 primary shapes.",
-        project: "Mini-Project: Create a 3-panel illustrated postcard telling a short visual story."
-      },
-      {
-        id: "skill-anim",
-        icon: "🎬",
-        title: "Animation & Creativity",
-        level: "Creative Lab",
-        desc: "Bring drawings to life using timing, squash-and-stretch, and storyboarding.",
-        lessons: ["Lesson 1: The 12 Principles of Animation Simplified", "Lesson 2: Storyboarding a 15-Second Scene", "Lesson 3: Smooth Transitions & Frame Timing"],
-        activity: "Draw a 5-frame flipbook of a bouncing star on sticky notes.",
-        project: "Mini-Project: Design a 6-frame storyboard showing Zuno discovering a glowing book."
-      },
-      {
-        id: "skill-code",
-        icon: "💻",
-        title: "Coding & Technology",
-        level: "Logic & Web",
-        desc: "Build interactive web pages, understand algorithms, and think like a creator.",
-        lessons: ["Lesson 1: How HTML, CSS & JavaScript Work Together", "Lesson 2: Loops, Conditions & Smart Logic", "Lesson 3: Building Interactive Mini-Apps"],
-        activity: "Write a 5-line algorithm describing how to make your favorite snack.",
-        project: "Mini-Project: Build an interactive Quiz Card or Color Palette Generator."
-      },
-      {
-        id: "skill-music",
-        icon: "🎵",
-        title: "Music & Rhythm",
-        level: "Sound Studio",
-        desc: "Explore beat patterns, scales, melody creation, and active listening.",
-        lessons: ["Lesson 1: Understanding Tempo, Beat & Rhythm", "Lesson 2: Major vs. Minor Moods in Music", "Lesson 3: Composing a 4-Bar Melody"],
-        activity: "Clap a 4/4 rhythm pattern while counting aloud steadily.",
-        project: "Mini-Project: Compose a relaxing 8-note study chime melody."
-      },
-      {
-        id: "skill-comm",
-        icon: "🗣️",
-        title: "Communication & Storytelling",
-        level: "Confidence Builder",
-        desc: "Express ideas clearly, present projects with confidence, and listen empathetically.",
-        lessons: ["Lesson 1: Structuring a Clear 60-Second Explanation", "Lesson 2: Body Language & Calm Voice Control", "Lesson 3: Storytelling for Presentations"],
-        activity: "Explain your favorite science topic to a family member in 3 simple sentences.",
-        project: "Mini-Project: Record or write a 2-minute 'Show & Tell' pitch about an invention."
-      },
-      {
-        id: "skill-think",
-        icon: "🧩",
-        title: "Thinking & Personal Growth",
-        level: "Mindset Lab",
-        desc: "Develop critical thinking, problem-solving frameworks, and emotional balance.",
-        lessons: ["Lesson 1: First-Principles Problem Solving", "Lesson 2: Turning Curiosity into Experiments", "Lesson 3: Self-Reflection Without Self-Criticism"],
-        activity: "Take any everyday problem and brainstorm 5 creative solutions without judging them.",
-        project: "Mini-Project: Create a Personal Curiosity Map of 5 questions you want to investigate."
-      }
-    ];
-
-    const KNOWLEDGE_UPDATES = [
-      {
-        category: "🌌 Space & Discovery",
-        title: "ISRO Student Outreach & Space Science Modules",
-        desc: "Explore satellite technology, Chandrayaan lunar findings, and free online student space quizzes designed for school learners.",
-        tag: "Discovery"
-      },
-      {
-        category: "🏅 National Olympiad",
-        title: "National Science & Mathematics Olympiads (Classes 6–10)",
-        desc: "Build conceptual reasoning through fun multi-stage problem solving in Physics, Biology, Astronomy, and Mathematics.",
-        tag: "Competition"
-      },
-      {
-        category: "🔬 Innovation Challenge",
-        title: "INSPIRE Awards – MANAK for School Innovators",
-        desc: "Have an original science or social innovation idea? Students in Classes 6–10 can submit prototypes for national recognition.",
-        tag: "Opportunity"
-      },
-      {
-        category: "📖 Curriculum Update",
-        title: "NEP Experiential & Skill-Integrated Learning",
-        desc: "Modern NCERT learning emphasizes conceptual understanding, art integration, coding literacy, and real-world application over rote memorization.",
-        tag: "Education"
-      }
-    ];
-
-    /* ================= STATE MANAGEMENT ================= */
-    const STORAGE_KEY = "zunify_platform_state_v1";
-    let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-      welcomed: false,
-      name: "Explorer",
-      classLevel: "Class 8",
-      darkMode: false,
-      completedLessons: [],
-      completedSkills: [],
-      goals: [
-        { id: 1, text: "Explore one NCERT visual diagram today", done: false },
-        { id: 2, text: "Try a creative mini-project in Skills Academy", done: false }
-      ],
-      notes: "",
-      feynmanText: ""
-    };
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      updateDashboardStats();
-      renderJourney();
-    }
-
-    /* ================= INITIALIZATION ================= */
-    function init() {
-      if (state.welcomed) {
-        document.getElementById("welcomeScreen").classList.add("hidden");
-      }
-      if (state.darkMode) {
-        document.body.classList.add("dark");
-        document.getElementById("darkModeToggle").textContent = "☀️ Light Mode";
-      }
-
-      document.getElementById("welcomeNameInput").value = state.name === "Explorer" ? "" : state.name;
-      document.getElementById("welcomeClassSelect").value = state.classLevel;
-      document.getElementById("quickNotesArea").value = state.notes;
-
-      updateHeaderAndGreeting();
-      renderNCERTCards("All");
-      renderSkillsGrid();
-      renderFutureTab("interest");
-      renderSmarterTab("recall");
-      renderKnowledgeHub();
-      updateDashboardStats();
-      renderJourney();
-    }
-
-    function updateHeaderAndGreeting() {
-      document.getElementById("headerStudentInfo").textContent = `${state.name} • ${state.classLevel}`;
-      document.getElementById("dashGreeting").textContent = `Welcome back, ${state.name}!`;
-    }
-
-    /* ================= WELCOME & NAVIGATION ================= */
-    document.getElementById("enterPlatformBtn").addEventListener("click", () => {
-      const nameVal = document.getElementById("welcomeNameInput").value.trim();
-      const classVal = document.getElementById("welcomeClassSelect").value;
-      if (nameVal) state.name = nameVal;
-      state.classLevel = classVal;
-      state.welcomed = true;
-      saveState();
-      updateHeaderAndGreeting();
-      document.getElementById("welcomeScreen").classList.add("hidden");
-    });
-
-    function switchTab(tabId) {
-      document.querySelectorAll(".nav-item").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.tab === tabId);
-      });
-      document.querySelectorAll(".page-section").forEach(sec => {
-        sec.classList.toggle("active", sec.id === tabId);
-      });
-      document.getElementById("sidebar").classList.remove("open");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    document.querySelectorAll(".nav-item").forEach(btn => {
-      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
-    });
-
-    document.getElementById("mobileMenuBtn").addEventListener("click", () => {
-      document.getElementById("sidebar").classList.toggle("open");
-    });
-
-    document.getElementById("darkModeToggle").addEventListener("click", () => {
-      state.darkMode = !state.darkMode;
-      document.body.classList.toggle("dark", state.darkMode);
-      document.getElementById("darkModeToggle").textContent = state.darkMode ? "☀️ Light Mode" : "🌙 Dark Mode";
-      saveState();
-    });
-
-    /* ================= GLOBAL SEARCH ================= */
-    const searchInput = document.getElementById("globalSearchInput");
-    const searchDropdown = document.getElementById("searchDropdown");
-
-    searchInput.addEventListener("input", () => {
-      const q = searchInput.value.trim().toLowerCase();
-      if (!q) {
-        searchDropdown.style.display = "none";
-        return;
-      }
-
-      const matches = [];
-      NCERT_LESSONS.forEach(l => {
-        if (l.title.toLowerCase().includes(q) || l.subject.toLowerCase().includes(q) || l.classLevel.toLowerCase().includes(q)) {
-          matches.push({ label: `${l.classLevel} • ${l.title}`, type: "NCERT", action: () => { switchTab("academics"); openLesson(l.id); } });
-        }
-      });
-      SKILLS_COURSES.forEach(s => {
-        if (s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q)) {
-          matches.push({ label: `${s.icon} ${s.title}`, type: "Skill", action: () => { switchTab("skills"); openSkillCourse(s.id); } });
-        }
-      });
-      ["Science Stream (PCM/PCB)", "Commerce Stream", "Humanities / Arts", "Scholarships & Olympiads"].forEach(f => {
-        if (f.toLowerCase().includes(q)) {
-          matches.push({ label: f, type: "Future", action: () => switchTab("future") });
-        }
-      });
-
-      if (matches.length === 0) {
-        searchDropdown.innerHTML = `<div class="search-result-item" style="color:var(--text-muted)">No exact matches—try asking Zuno!</div>`;
-      } else {
-        searchDropdown.innerHTML = "";
-        matches.forEach(m => {
-          const div = document.createElement("div");
-          div.className = "search-result-item";
-          div.innerHTML = `<span>${m.label}</span><span class="badge">${m.type}</span>`;
-          div.onclick = () => {
-            m.action();
-            searchDropdown.style.display = "none";
-            searchInput.value = "";
-          };
-          searchDropdown.appendChild(div);
-        });
-      }
-      searchDropdown.style.display = "block";
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".search-box")) searchDropdown.style.display = "none";
-    });
-
-    /* ================= NCERT ACADEMICS ================= */
-    document.querySelectorAll("#classFilterTabs .pill-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll("#classFilterTabs .pill-tab").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        renderNCERTCards(tab.dataset.class);
-      });
-    });
-
-    function renderNCERTCards(filterClass) {
-      const grid = document.getElementById("ncertCardsGrid");
-      grid.innerHTML = "";
-      const list = filterClass === "All" ? NCERT_LESSONS : NCERT_LESSONS.filter(l => l.classLevel === filterClass);
-
-      list.forEach(lesson => {
-        const isDone = state.completedLessons.includes(lesson.id);
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span class="badge">${lesson.classLevel} • ${lesson.subject}</span>
-            ${isDone ? '<span class="badge badge-success">✓ Explored</span>' : ''}
-          </div>
-          <h3 style="margin-bottom:8px;">${lesson.title}</h3>
-          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:16px;">${lesson.summary}</p>
-          <button class="btn btn-primary" onclick="openLesson('${lesson.id}')">Open Diagram & Quiz</button>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    window.openLesson = function(lessonId) {
-      const lesson = NCERT_LESSONS.find(l => l.id === lessonId);
-      if (!lesson) return;
-
-      const ws = document.getElementById("lessonWorkspace");
-      ws.style.display = "block";
-      ws.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <span class="badge">${lesson.classLevel} • ${lesson.subject}</span>
-            <h2 style="margin-top:6px;">${lesson.title}</h2>
-          </div>
-          <button class="btn btn-soft" onclick="document.getElementById('lessonWorkspace').style.display='none'">Close Lesson ✕</button>
-        </div>
-
-        <div class="lesson-box">
-          <h4>📘 Concept & Real-World Example</h4>
-          <p style="margin-top:6px; line-height:1.55;">${lesson.summary}</p>
-          <p style="margin-top:10px; padding:10px 14px; background:var(--card); border-radius:10px; border-left:4px solid var(--gold);">
-            <strong>${lesson.example}</strong>
-          </p>
-
-          <div class="diagram-stage">
-            <div style="font-size:0.8rem; font-weight:700; color:var(--primary); margin-bottom:6px;">VISUAL CONCEPT DIAGRAM</div>
-            ${lesson.diagramSVG}
-          </div>
-
-          <div class="zuno-tip-box">
-            <svg width="48" height="48" style="flex-shrink:0;"><use href="#zuno-mascot"/></svg>
-            <div>
-              <div style="font-weight:700; color:var(--primary); font-size:0.88rem;">Zuno’s Helpful Tip</div>
-              <div style="font-size:0.9rem;">${lesson.zunoTip}</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="lesson-box" style="margin-top:16px;">
-          <h4>✍️ Quick Check Practice Question</h4>
-          <p style="margin:8px 0 12px; font-weight:600;">${lesson.quiz.question}</p>
-          <div id="quizOptionsWrap">
-            ${lesson.quiz.options.map((opt, idx) => `
-              <button class="quiz-option" onclick="checkQuizAnswer('${lesson.id}', ${idx}, this)">${opt}</button>
-            `).join("")}
-          </div>
-          <div id="quizFeedback" style="margin-top:12px; font-weight:600;"></div>
-        </div>
-      `;
-      ws.scrollIntoView({ behavior: "smooth" });
-    };
-
-    window.checkQuizAnswer = function(lessonId, selectedIdx, btnEl) {
-      const lesson = NCERT_LESSONS.find(l => l.id === lessonId);
-      const feedback = document.getElementById("quizFeedback");
-      document.querySelectorAll("#quizOptionsWrap .quiz-option").forEach(b => b.classList.remove("correct", "wrong"));
-
-      if (selectedIdx === lesson.quiz.answer) {
-        btnEl.classList.add("correct");
-        feedback.innerHTML = `<span style="color:var(--success)">🎉 Wonderful thinking! Zuno is proud of you. Lesson marked as explored!</span>`;
-        if (!state.completedLessons.includes(lesson.id)) {
-          state.completedLessons.push(lesson.id);
-          saveState();
-          renderNCERTCards(document.querySelector("#classFilterTabs .pill-tab.active").dataset.class);
-        }
-      } else {
-        btnEl.classList.add("wrong");
-        feedback.innerHTML = `<span style="color:#d97706">💜 Not quite—take a calm look at Zuno's tip above and try another option!</span>`;
-      }
-    };
-
-    /* ================= SKILLS ACADEMY ================= */
-    function renderSkillsGrid() {
-      const grid = document.getElementById("skillsGrid");
-      grid.innerHTML = "";
-
-      SKILLS_COURSES.forEach(skill => {
-        const earned = state.completedSkills.includes(skill.id);
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span style="font-size:1.8rem;">${skill.icon}</span>
-            ${earned ? '<span class="badge badge-gold">🏅 Certificate Earned</span>' : `<span class="badge">${skill.level}</span>`}
-          </div>
-          <h3 style="margin-bottom:6px;">${skill.title}</h3>
-          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:16px;">${skill.desc}</p>
-          <button class="btn btn-primary" onclick="openSkillCourse('${skill.id}')">Start Course & Project</button>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    window.openSkillCourse = function(skillId) {
-      const skill = SKILLS_COURSES.find(s => s.id === skillId);
-      if (!skill) return;
-
-      const panel = document.getElementById("skillCoursePanel");
-      panel.style.display = "block";
-      panel.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <span class="badge badge-gold">${skill.icon} ${skill.level}</span>
-            <h2 style="margin-top:6px;">${skill.title}</h2>
-          </div>
-          <button class="btn btn-soft" onclick="document.getElementById('skillCoursePanel').style.display='none'">Close Course ✕</button>
-        </div>
-
-        <div class="lesson-box">
-          <h4>📖 Guided Mini-Lessons</h4>
-          <ul style="margin:10px 0 14px 20px; line-height:1.8;">
-            ${skill.lessons.map(ls => `<li>${ls}</li>`).join("")}
-          </ul>
-
-          <div style="background:var(--card); padding:14px; border-radius:12px; border:1px solid var(--card-border); margin-bottom:12px;">
-            <strong>🎯 Hands-On Activity:</strong> ${skill.activity}
-          </div>
-
-          <div style="background:var(--gold-soft); color:#221738; padding:14px; border-radius:12px;">
-            <strong>🚀 Capstone Mini-Project:</strong> ${skill.project}
-          </div>
-
-          <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap;">
-            <button class="btn-gold" onclick="completeSkillCourse('${skill.id}')">Complete Mini-Project & Unlock Certificate 🏅</button>
-          </div>
-        </div>
-      `;
-      panel.scrollIntoView({ behavior: "smooth" });
-    };
-
-    window.completeSkillCourse = function(skillId) {
-      const skill = SKILLS_COURSES.find(s => s.id === skillId);
-      if (!state.completedSkills.includes(skillId)) {
-        state.completedSkills.push(skillId);
-        saveState();
-        renderSkillsGrid();
-      }
-      showCertificate(skill.title);
-    };
-
-    function showCertificate(courseTitle) {
-      document.getElementById("certStudentName").textContent = state.name;
-      document.getElementById("certCourseTitle").textContent = courseTitle;
-      document.getElementById("certDateText").textContent = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
-      document.getElementById("certModal").classList.add("open");
-    }
-
-    /* ================= FUTURE PLANNING ================= */
-    document.querySelectorAll("#futureTabs .pill-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll("#futureTabs .pill-tab").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        renderFutureTab(tab.dataset.ftab);
-      });
-    });
-
-    function renderFutureTab(ftab) {
-      const area = document.getElementById("futureContentArea");
-      if (ftab === "interest") {
-        area.innerHTML = `
-          <div class="card">
-            <h3>✨ Discover What Sparks Your Curiosity</h3>
-            <p style="color:var(--text-muted); margin:6px 0 16px;">Pick an activity you naturally enjoy to see matching streams and future fields:</p>
-            <div class="grid-3">
-              <div class="lesson-box" style="margin-top:0;">
-                <h4>🔬 Solving Puzzles & Building Tech</h4>
-                <p style="font-size:0.88rem; margin:8px 0;">You enjoy experiments, patterns, and asking "how does this work?"</p>
-                <span class="badge">Suggested: Science (PCM/PCB), Robotics, Data Science, Medicine</span>
-              </div>
-              <div class="lesson-box" style="margin-top:0;">
-                <h4>🎨 Drawing, Stories & Human Ideas</h4>
-                <p style="font-size:0.88rem; margin:8px 0;">You love expressing emotions, history, design, or helping communities.</p>
-                <span class="badge badge-gold">Suggested: Humanities, Design (NID/UCEED), Psychology, Law</span>
-              </div>
-              <div class="lesson-box" style="margin-top:0;">
-                <h4>📊 Organizing, Finance & Entrepreneurship</h4>
-                <p style="font-size:0.88rem; margin:8px 0;">You enjoy planning events, understanding markets, and leading teams.</p>
-                <span class="badge badge-success">Suggested: Commerce, Economics, Business Management, FinTech</span>
-              </div>
-            </div>
-          </div>`;
-      } else if (ftab === "streams") {
-        area.innerHTML = `
-          <div class="grid-3">
-            <div class="card">
-              <span class="badge">After Class 10</span>
-              <h3 style="margin:10px 0;">🧪 Science Stream (PCM / PCB)</h3>
-              <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.55;">
-                <strong>Core Subjects:</strong> Physics, Chemistry, Mathematics and/or Biology.<br/>
-                <strong>Opens Doors To:</strong> Engineering, Medicine, Biotechnology, Astrophysics, Architecture, AI Research.
-              </p>
-            </div>
-            <div class="card">
-              <span class="badge badge-gold">After Class 10</span>
-              <h3 style="margin:10px 0;">💼 Commerce Stream</h3>
-              <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.55;">
-                <strong>Core Subjects:</strong> Accountancy, Business Studies, Economics, Applied Maths.<br/>
-                <strong>Opens Doors To:</strong> Chartered Accountancy, Finance, Entrepreneurship, Economics, Management.
-              </p>
-            </div>
-            <div class="card">
-              <span class="badge badge-success">After Class 10</span>
-              <h3 style="margin:10px 0;">🏛️ Humanities & Arts</h3>
-              <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.55;">
-                <strong>Core Subjects:</strong> History, Political Science, Geography, Psychology, Sociology.<br/>
-                <strong>Opens Doors To:</strong> Civil Services, Law, Journalism, International Relations, Public Policy, Design.
-              </p>
-            </div>
-          </div>`;
-      } else if (ftab === "careers") {
-        area.innerHTML = `
-          <div class="card">
-            <h3>🎓 Popular Degrees, Top Colleges & Entrance Pathways</h3>
-            <div class="grid-2" style="margin-top:14px;">
-              <div class="lesson-box" style="margin-top:0;">
-                <h4>⚙️ Engineering & Technology (B.Tech / B.E.)</h4>
-                <p style="font-size:0.88rem; margin-top:6px;"><strong>Colleges:</strong> IITs, NITs, IIITs, BITS.<br/><strong>Exams:</strong> JEE Main, JEE Advanced, BITSAT.</p>
-              </div>
-              <div class="lesson-box" style="margin-top:0;">
-                <h4>🩺 Medicine & Life Sciences (MBBS / B.Sc)</h4>
-                <p style="font-size:0.88rem; margin-top:6px;"><strong>Colleges:</strong> AIIMS, JIPMER, IISc Bangalore.<br/><strong>Exams:</strong> NEET-UG, IISER Aptitude Test (IAT).</p>
-              </div>
-              <div class="lesson-box" style="margin-top:0;">
-                <h4>🎨 Design & Innovation (B.Des)</h4>
-                <p style="font-size:0.88rem; margin-top:6px;"><strong>Colleges:</strong> NID, IIT Bombay (IDC), NIFT.<br/><strong>Exams:</strong> UCEED, NID DAT, NIFT Entrance.</p>
-              </div>
-              <div class="lesson-box" style="margin-top:0;">
-                <h4>⚖️ Law, Liberal Arts & Management</h4>
-                <p style="font-size:0.88rem; margin-top:6px;"><strong>Colleges:</strong> NLUs, Delhi University, IIM Indore (IPM).<br/><strong>Exams:</strong> CLAT, CUET-UG, IPMAT.</p>
-              </div>
-            </div>
-          </div>`;
-      } else {
-        area.innerHTML = `
-          <div class="grid-2">
-            <div class="card">
-              <span class="badge badge-gold">School Scholarship</span>
-              <h3 style="margin:10px 0;">🏅 NMMS (National Means-cum-Merit Scholarship)</h3>
-              <p style="font-size:0.88rem; color:var(--text-muted);">Supports meritorious Class 8 students with annual financial scholarships through Class 12.</p>
-            </div>
-            <div class="card">
-              <span class="badge badge-gold">Science Fellowship</span>
-              <h3 style="margin:10px 0;">🔭 INSPIRE & KVPY / Kishore Vaigyanik Pathways</h3>
-              <p style="font-size:0.88rem; color:var(--text-muted);">Encourages young science talent in Classes 6–10 through science camps, innovation grants, and mentorship.</p>
-            </div>
-          </div>`;
-      }
-    }
-
-    /* ================= STUDY SMARTER ================= */
-    const FLASHCARDS = [
-      { q: "What is the formula for Speed?", a: "Speed = Distance ÷ Time (SI unit: m/s)" },
-      { q: "Why do leaves appear green?", a: "Because Chlorophyll reflects green light while absorbing red and blue wavelengths for photosynthesis." },
-      { q: "What is the sum of interior angles of a triangle?", a: "Always 180°!" }
-    ];
-    let fcIndex = 0;
-    let fcFlipped = false;
-    let timerInterval = null;
-    let timerSeconds = 25 * 60;
-
-    document.querySelectorAll("#smarterTabs .pill-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll("#smarterTabs .pill-tab").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        renderSmarterTab(tab.dataset.stab);
-      });
-    });
-
-    function renderSmarterTab(stab) {
-      const area = document.getElementById("smarterContentArea");
-      if (stab === "recall") {
-        const card = FLASHCARDS[fcIndex];
-        area.innerHTML = `
-          <h3>🃏 Active Recall Flashcards</h3>
-          <p style="color:var(--text-muted); font-size:0.88rem;">Test your memory gently before flipping the card.</p>
-          <div class="flashcard" onclick="flipFlashcard()">
-            <span class="badge" style="margin-bottom:10px;">${fcFlipped ? "Answer" : "Question"} (${fcIndex + 1}/${FLASHCARDS.length})</span>
-            <h3 style="font-size:1.25rem;">${fcFlipped ? card.a : card.q}</h3>
-            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:12px;">Tap card to flip</p>
-          </div>
-          <div style="display:flex; gap:10px; justify-content:center;">
-            <button class="btn btn-soft" onclick="flipFlashcard()">Flip Card</button>
-            <button class="btn btn-primary" onclick="nextFlashcard()">Next Card →</button>
-          </div>`;
-      } else if (stab === "spaced") {
-        area.innerHTML = `
-          <h3>📅 Calm Spaced Repetition Guide</h3>
-          <p style="color:var(--text-muted); font-size:0.9rem; margin:8px 0 16px;">Instead of cramming for hours, revisit a concept briefly across spaced intervals:</p>
-          <div class="grid-3">
-            <div class="lesson-box" style="margin-top:0;"><strong>Day 1:</strong> Learn with a visual diagram & Zuno's tip.</div>
-            <div class="lesson-box" style="margin-top:0;"><strong>Day 3:</strong> Try 1 quick practice question without notes.</div>
-            <div class="lesson-box" style="margin-top:0;"><strong>Day 7:</strong> Explain the concept aloud in 30 seconds.</div>
-          </div>`;
-      } else if (stab === "feynman") {
-        area.innerHTML = `
-          <h3>🧸 The Feynman Technique</h3>
-          <p style="color:var(--text-muted); font-size:0.9rem; margin:8px 0 14px;">Explain any topic below as if you are teaching it to a curious 10-year-old friend:</p>
-          <textarea id="feynmanInput" class="notes-pad" style="min-height:140px;" placeholder="Pick a topic (like Gravity or Fractions) and explain it in super simple words...">${state.feynmanText || ""}</textarea>
-          <button class="btn btn-primary" style="margin-top:12px;" onclick="saveFeynman()">Save Simple Explanation ✨</button>
-          <span id="feynmanSavedMsg" style="margin-left:10px; font-size:0.88rem; color:var(--success);"></span>`;
-      } else if (stab === "mindmap") {
-        area.innerHTML = `
-          <h3>🕸️ Visual Mind Mapping</h3>
-          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:14px;">Connect a central idea to branches of sub-concepts:</p>
-          <div class="diagram-stage">
-            <svg width="100%" height="200" viewBox="0 0 460 200">
-              <line x1="230" y1="100" x2="100" y2="45" stroke="#8b5cf6" stroke-width="3"/>
-              <line x1="230" y1="100" x2="360" y2="45" stroke="#8b5cf6" stroke-width="3"/>
-              <line x1="230" y1="100" x2="100" y2="155" stroke="#f59e0b" stroke-width="3"/>
-              <line x1="230" y1="100" x2="360" y2="155" stroke="#10b981" stroke-width="3"/>
-              <rect x="165" y="78" width="130" height="44" rx="22" fill="#6d28d9"/>
-              <text x="192" y="105" fill="white" font-size="13" font-weight="bold">Central Topic</text>
-              <rect x="35" y="25" width="120" height="36" rx="12" fill="#ede9fe" stroke="#6d28d9"/>
-              <text x="55" y="48" fill="#221738" font-size="12" font-weight="bold">Key Definitions</text>
-              <rect x="305" y="25" width="120" height="36" rx="12" fill="#ede9fe" stroke="#6d28d9"/>
-              <text x="322" y="48" fill="#221738" font-size="12" font-weight="bold">Visual Diagrams</text>
-              <rect x="35" y="138" width="120" height="36" rx="12" fill="#fef3c7" stroke="#f59e0b"/>
-              <text x="48" y="161" fill="#221738" font-size="12" font-weight="bold">Real Examples</text>
-              <rect x="305" y="138" width="120" height="36" rx="12" fill="#d1fae5" stroke="#10b981"/>
-              <text x="325" y="161" fill="#221738" font-size="12" font-weight="bold">Practice Quiz</text>
-            </svg>
-          </div>`;
-      } else {
-        const mins = String(Math.floor(timerSeconds / 60)).padStart(2, "0");
-        const secs = String(timerSeconds % 60).padStart(2, "0");
-        area.innerHTML = `
-          <div style="text-align:center; padding:12px;">
-            <h3>⏱️ Calm Focus Pomodoro Timer</h3>
-            <p style="color:var(--text-muted); font-size:0.9rem;">25 minutes of gentle focus, followed by a refreshing break. Stop or pause anytime!</p>
-            <div id="pomodoroDisplay" style="font-size:3.2rem; font-weight:800; color:var(--primary); margin:18px 0;">${mins}:${secs}</div>
-            <div style="display:flex; gap:10px; justify-content:center;">
-              <button class="btn btn-primary" onclick="startPomodoro()">▶ Start Focus</button>
-              <button class="btn btn-soft" onclick="pausePomodoro()">⏸ Pause</button>
-              <button class="btn btn-soft" onclick="resetPomodoro()">↺ Reset</button>
-            </div>
-          </div>`;
-      }
-    }
-
-    window.flipFlashcard = function() {
-      fcFlipped = !fcFlipped;
-      renderSmarterTab("recall");
-    };
-    window.nextFlashcard = function() {
-      fcIndex = (fcIndex + 1) % FLASHCARDS.length;
-      fcFlipped = false;
-      renderSmarterTab("recall");
-    };
-    window.saveFeynman = function() {
-      state.feynmanText = document.getElementById("feynmanInput").value;
-      saveState();
-      document.getElementById("feynmanSavedMsg").textContent = "✓ Saved! Great job simplifying complex ideas.";
-    };
-    window.startPomodoro = function() {
-      if (timerInterval) return;
-      timerInterval = setInterval(() => {
-        if (timerSeconds > 0) {
-          timerSeconds--;
-          const disp = document.getElementById("pomodoroDisplay");
-          if (disp) {
-            disp.textContent = `${String(Math.floor(timerSeconds / 60)).padStart(2, "0")}:${String(timerSeconds % 60).padStart(2, "0")}`;
-          }
-        } else {
-          clearInterval(timerInterval);
-          timerInterval = null;
-          alert("🌸 Great session! Take a 5-minute stretch and sip some water.");
-        }
-      }, 1000);
-    };
-    window.pausePomodoro = function() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    };
-    window.resetPomodoro = function() {
-      pausePomodoro();
-      timerSeconds = 25 * 60;
-      renderSmarterTab("pomodoro");
-    };
-
-    /* ================= MY JOURNEY & DASHBOARD STATS ================= */
-    function updateDashboardStats() {
-      const totalItems = NCERT_LESSONS.length + SKILLS_COURSES.length;
-      const doneItems = state.completedLessons.length + state.completedSkills.length;
-      const pct = Math.round((doneItems / totalItems) * 100);
-
-      document.getElementById("dashLessonsCount").textContent = `${state.completedLessons.length} / ${NCERT_LESSONS.length} Lessons Explored`;
-      document.getElementById("dashSkillsCount").textContent = `${state.completedSkills.length} Certificates Earned`;
-      document.getElementById("overallPercentBadge").textContent = `${pct}% Explored`;
-      document.getElementById("overallProgressFill").style.width = `${pct}%`;
-    }
-
-    document.getElementById("addGoalBtn").addEventListener("click", () => {
-      const inp = document.getElementById("goalInput");
-      if (!inp.value.trim()) return;
-      state.goals.push({ id: Date.now(), text: inp.value.trim(), done: false });
-      inp.value = "";
-      saveState();
-    });
-
-    window.toggleGoal = function(id) {
-      const g = state.goals.find(item => item.id === id);
-      if (g) g.done = !g.done;
-      saveState();
-    };
-
-    function renderJourney() {
-      const goalsList = document.getElementById("goalsList");
-      goalsList.innerHTML = state.goals.map(g => `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--bg-soft); border-radius:12px;">
-          <label style="display:flex; align-items:center; gap:10px; cursor:pointer; text-decoration:${g.done ? 'line-through' : 'none'}; opacity:${g.done ? '0.65' : '1'};">
-            <input type="checkbox" ${g.done ? 'checked' : ''} onchange="toggleGoal(${g.id})" />
-            <span>${g.text}</span>
-          </label>
-          ${g.done ? '<span class="badge badge-success">Celebrated!</span>' : ''}
-        </div>
-      `).join("");
-
-      const achievements = [
-        { icon: "💜", title: "Curious Starter", unlocked: state.welcomed },
-        { icon: "📘", title: "NCERT Explorer", unlocked: state.completedLessons.length >= 1 },
-        { icon: "🎨", title: "Skill Creator", unlocked: state.completedSkills.length >= 1 },
-        { icon: "📝", title: "Thoughtful Note-Taker", unlocked: state.notes.trim().length > 10 }
-      ];
-
-      document.getElementById("achievementsGrid").innerHTML = achievements.map(a => `
-        <div style="padding:14px; border-radius:14px; text-align:center; border:1px solid var(--card-border); background:${a.unlocked ? 'var(--primary-pale)' : 'var(--bg-soft)'}; opacity:${a.unlocked ? '1' : '0.5'};">
-          <div style="font-size:1.6rem;">${a.icon}</div>
-          <div style="font-weight:700; font-size:0.85rem; margin-top:6px;">${a.title}</div>
-          <div style="font-size:0.75rem; color:var(--text-muted);">${a.unlocked ? 'Unlocked!' : 'Keep exploring'}</div>
-        </div>
-      `).join("");
-
-      const certsWrap = document.getElementById("earnedCertsList");
-      if (state.completedSkills.length === 0) {
-        certsWrap.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Complete any mini-project in Skills Academy to display your certificate here!</p>`;
-      } else {
-        certsWrap.innerHTML = state.completedSkills.map(id => {
-          const sk = SKILLS_COURSES.find(s => s.id === id);
-          return `<button class="btn btn-soft" onclick="showCertificate('${sk.title}')">🏅 View ${sk.title} Certificate</button>`;
-        }).join("");
-      }
-    }
-
-    /* ================= KNOWLEDGE HUB & QUICK NOTES ================= */
-    function renderKnowledgeHub() {
-      document.getElementById("knowledgeHubGrid").innerHTML = KNOWLEDGE_UPDATES.map(item => `
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span style="font-weight:700; color:var(--primary);">${item.category}</span>
-            <span class="badge badge-gold">${item.tag}</span>
-          </div>
-          <h3 style="margin-bottom:8px;">${item.title}</h3>
-          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.55;">${item.desc}</p>
-        </div>
-      `).join("");
-    }
-
-    document.getElementById("quickNotesArea").addEventListener("input", (e) => {
-      state.notes = e.target.value;
-      saveState();
-    });
-
-    /* ================= ZUNO AI COMPANION CHAT ================= */
-    const zunoChatWin = document.getElementById("zunoChatWindow");
-    document.getElementById("zunoFloatingBtn").addEventListener("click", () => {
-      zunoChatWin.classList.toggle("open");
-    });
-    document.getElementById("closeZunoChat").addEventListener("click", () => {
-      zunoChatWin.classList.remove("open");
-    });
-
-    function replyFromZuno(userText) {
-      const t = userText.toLowerCase();
-      if (t.includes("photosynthesis") || t.includes("plant")) {
-        return "🌱 Photosynthesis is how green plants turn sunlight, water, and CO₂ into glucose food using chlorophyll—releasing fresh oxygen for us!";
-      }
-      if (t.includes("trigonometry") || t.includes("math") || t.includes("angle")) {
-        return "📐 Try breaking geometry and trigonometry into right-angled triangles! Remember SOH-CAH-TOA, and check out our Class 8 & 10 visual diagrams in NCERT Academics.";
-      }
-      if (t.includes("career") || t.includes("stream") || t.includes("future")) {
-        return "🧭 Choosing a stream is about matching what makes you curious! Explore Science, Commerce, or Humanities in our Future Planning compass—there is no single 'right' path, only your path.";
-      }
-      if (t.includes("stress") || t.includes("tired") || t.includes("hard")) {
-        return "💜 Take a deep breath! Learning isn't a race. You can pause anytime, try a 5-minute doodle in Skills Academy, and come back whenever you feel refreshed.";
-      }
-      return `✨ That’s a wonderful question, ${state.name}! Try breaking it down using the Feynman Technique in Study Smarter, or explore our NCERT & Skills modules together!`;
-    }
-
-    function sendZunoMessage() {
-      const inp = document.getElementById("zunoChatInput");
-      const text = inp.value.trim();
-      if (!text) return;
-
-      const box = document.getElementById("zunoChatMessages");
-      box.innerHTML += `<div class="msg msg-user">${text}</div>`;
-      inp.value = "";
-
-      setTimeout(() => {
-        box.innerHTML += `<div class="msg msg-zuno">${replyFromZuno(text)}</div>`;
-        box.scrollTop = box.scrollHeight;
-      }, 300);
-    }
-
-    document.getElementById("zunoSendBtn").addEventListener("click", sendZunoMessage);
-    document.getElementById("zunoChatInput").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") sendZunoMessage();
-    });
-
-    init();
-  </script>
+  `).join("");
+}
+
+function updateDashboard() {
+  document.getElementById("statLessons").textContent=data.completed.length;
+  document.getElementById("statNotes").textContent=data.notes.length;
+  document.getElementById("progressLessons").textContent=data.completed.length;
+  document.getElementById("progressNotes").textContent=data.notes.length;
+  document.getElementById("progressSubjects").textContent=data.explored.length;
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g,char=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
+}
+
+// START APPLICATION
+document.getElementById("classSelect").value=data.selectedClass||"9";
+applyTheme();
+renderLessons();
+renderNotes();
+updateDashboard();
+</script>
 </body>
 </html>
+
+    
 
